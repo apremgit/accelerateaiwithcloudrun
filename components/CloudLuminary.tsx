@@ -34,7 +34,7 @@ export function CloudLuminary({ onActivate, activeTab }: CloudLuminaryProps) {
         title="Show Cloud Luminary"
       >
         <span className="w-2 h-2 rounded-full bg-[#8DA399] animate-ping" />
-        <span className="font-serif italic text-xs">Luminary (28 Studies)</span>
+        <span className="font-serif italic text-xs">Luminary (28 Blueprints)</span>
       </button>
     );
   }
@@ -52,7 +52,7 @@ export function CloudLuminary({ onActivate, activeTab }: CloudLuminaryProps) {
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[#6B8E9B] animate-pulse" />
               <span className="text-[11px] font-sans uppercase tracking-wider text-[#6B8E9B] font-semibold">
-                Cloud Luminary
+                PAI Luminary
               </span>
             </div>
             <button
@@ -68,18 +68,18 @@ export function CloudLuminary({ onActivate, activeTab }: CloudLuminaryProps) {
           </div>
 
           <p className="font-serif text-[#2C3539] text-sm leading-snug mb-2">
-            The Architecture Pollinator
+            Architecture Engine
           </p>
 
           <p className="text-[11px] text-[#6B8E9B] leading-relaxed mb-3">
-            Explore 28 production-grade case studies covering Cloud Run scale-to-zero, Agentic AI, and PCA/ACE patterns.
+            Explore 28 production-grade blueprints powering PAI's persistent memory, agentic reasoning, and sovereign zero-loss cognitive layer.
           </p>
 
           <button
             onClick={onActivate}
             className="w-full flex items-center justify-between px-3 py-1.5 rounded-lg bg-[#2C3539] text-[#F9F8F6] text-xs font-medium hover:bg-[#6B8E9B] transition-colors cursor-pointer group"
           >
-            <span>Explore 28 Case Studies</span>
+            <span>Explore 28 Blueprints</span>
             <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
@@ -93,7 +93,7 @@ export function CloudLuminary({ onActivate, activeTab }: CloudLuminaryProps) {
         onClick={onActivate}
         role="button"
         tabIndex={0}
-        aria-label="Open 28 Enterprise Google Cloud Case Studies"
+        aria-label="Open 28 PAI Architecture Blueprints"
       >
         {/* Outer orbital halo ring */}
         <div

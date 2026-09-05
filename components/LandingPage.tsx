@@ -62,59 +62,89 @@ export function LandingPage({
         isSubmitting ? 'opacity-50 -translate-y-4' : 'opacity-100 translate-y-0'
       }`}
     >
-      {/* Centered Sanctuary Introduction (Maximum Negative Space) */}
-      <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-8 py-16 max-w-2xl mx-auto w-full text-center">
-        {/* Slow-breathing welcome prompt */}
-        <div className="mb-6">
-          <p className="text-xs uppercase tracking-[0.1em] text-[#8DA399] font-sans font-medium animate-pulse">
-            What&apos;s on your mind today?
-          </p>
+      {/* Centered Sanctuary Introduction */}
+      <div className="flex-1 flex flex-col items-center justify-center px-6 sm:px-8 py-16 max-w-3xl mx-auto w-full text-center">
+        {/* PAI System Badge */}
+        <div className="mb-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFFFFF] border border-[#D1D8DB] text-[11px] font-sans font-medium text-[#2C3539] tracking-wider uppercase shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-[#8DA399] animate-pulse" />
+            <span>PAI COGNITIVE OS &bull; ZERO-LOSS PERSISTENT MEMORY</span>
+          </div>
         </div>
 
-        {/* Hero Title: Lora, 48px, #2C3539 */}
-        <h1 className="text-4xl sm:text-5xl lg:text-[48px] font-serif text-[#2C3539] font-normal tracking-[-0.02em] leading-tight mb-4">
-          A quiet corner of the internet.
+        {/* Hero Title: Lora, 48px */}
+        <h1 className="text-4xl sm:text-5xl lg:text-[52px] font-serif text-[#2C3539] font-normal tracking-[-0.02em] leading-tight mb-4">
+          PAI: The Companion That Never Forgets.
         </h1>
 
-        {/* Subtitle: Albert Sans, 18px, #6B8E9B */}
-        <p className="text-base sm:text-lg text-[#6B8E9B] font-sans font-light max-w-lg mx-auto leading-relaxed mb-12">
-          Your private sounding board for untangling complex thoughts.
+        {/* Subtitle: Albert Sans */}
+        <p className="text-base sm:text-lg text-[#6B8E9B] font-serif italic max-w-2xl mx-auto leading-relaxed mb-6">
+          Your sovereign cognitive layer. Resurfaces your deep work state, active coding logic, culinary recipes, and spatial journeys through BigQuery Vector RAG and Gemini reasoning.
         </p>
 
-        {/* Entry Input: width: 480px, floating underline, border-bottom: 1px solid #D1D8DB */}
-        <form onSubmit={handleSubmit} className="w-full max-w-[480px] space-y-6">
+        {/* Core Value Proposition Quote Box */}
+        <div className="p-4 mb-8 rounded-xl bg-[#FFFFFF] border border-[#D1D8DB]/80 shadow-2xs max-w-xl mx-auto text-xs font-sans text-[#2C3539] leading-relaxed">
+          <span className="font-semibold text-[#8DA399] uppercase tracking-wider block mb-1 text-[10px]">
+            Zero-Loss Memory Guarantee
+          </span>
+          &ldquo;Website to store all data. You may forget, but your AI can&apos;t. Start where you left off across your cooking, coding, and daily skills.&rdquo;
+        </div>
+
+        {/* Entry Input */}
+        <form onSubmit={handleSubmit} className="w-full max-w-[520px] space-y-5">
           <div className="relative group">
             <input
               id="input-landing-thought"
               type="text"
               value={initialThought}
               onChange={(e) => setInitialThought(e.target.value)}
-              placeholder="Begin typing..."
-              className="w-full bg-transparent border-b border-[#D1D8DB] group-hover:border-[#6B8E9B] focus:border-[#6B8E9B] pb-3 text-lg font-serif text-[#2C3539] placeholder-[#D1D8DB] outline-hidden transition-colors duration-300 text-center sm:text-left"
+              placeholder="What are we picking up today? (e.g. Sourdough baking, React state, or morning reflection)..."
+              className="w-full bg-transparent border-b border-[#D1D8DB] group-hover:border-[#6B8E9B] focus:border-[#6B8E9B] pb-3 text-base sm:text-lg font-serif text-[#2C3539] placeholder-[#D1D8DB] outline-hidden transition-colors duration-300 text-center"
               autoFocus
             />
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            {initialThought.trim() ? (
+          {/* Quick Context Jump Chips */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5 text-[11px] font-sans text-[#6B8E9B] pt-1">
+            <span className="text-[10px] uppercase tracking-wider text-[#6B8E9B]/80 mr-1">Resume:</span>
+            {[
+              { label: '🍳 Culinary Notes', text: 'Resume my sourdough bread hydration notes and oven baking schedule.' },
+              { label: '💻 Coding State', text: 'Resume my Next.js server actions and BigQuery vector search implementation.' },
+              { label: '🗺️ Spatial Journey', text: 'Where did we leave off on quiet spots in Tokyo?' },
+              { label: '🧠 Thought Log', text: 'Review my weekly reflection on deep work priorities.' },
+            ].map((chip, idx) => (
               <button
-                id="btn-begin-reflection"
-                type="submit"
-                className="w-full sm:w-auto px-8 py-3 rounded bg-[#6B8E9B] hover:opacity-90 active:scale-[0.99] text-white text-xs font-sans uppercase tracking-[0.05em] transition-all cursor-pointer flex items-center justify-center gap-2"
-              >
-                <span>Begin Reflection</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            ) : (
-              <button
-                id="btn-enter-sanctuary"
+                key={idx}
                 type="button"
-                onClick={() => {
-                  if (onBeginReflection) onBeginReflection('');
-                }}
-                className="w-full sm:w-auto px-6 py-2.5 rounded border border-[#D1D8DB] hover:border-[#6B8E9B] text-[#2C3539] hover:text-[#6B8E9B] text-xs font-sans uppercase tracking-[0.05em] transition-all cursor-pointer"
+                onClick={() => setInitialThought(chip.text)}
+                className="px-2.5 py-1 rounded-full bg-[#FFFFFF] border border-[#D1D8DB] hover:border-[#6B8E9B] hover:text-[#2C3539] transition-all cursor-pointer"
               >
-                Enter Sanctuary
+                {chip.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-3">
+            <button
+              id="btn-resume-context"
+              type="submit"
+              className="w-full sm:w-auto px-7 py-3 rounded-xl bg-[#2C3539] hover:bg-[#6B8E9B] active:scale-[0.99] text-white text-xs font-sans uppercase tracking-[0.06em] font-medium transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+            >
+              <span>Resume Context</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+
+            {onNavigateToCaseStudies && (
+              <button
+                id="btn-explore-architecture"
+                type="button"
+                onClick={onNavigateToCaseStudies}
+                className="w-full sm:w-auto px-5 py-3 rounded-xl border border-[#D1D8DB] bg-[#FFFFFF] hover:border-[#6B8E9B] text-[#2C3539] hover:text-[#6B8E9B] text-xs font-sans uppercase tracking-[0.06em] transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <span>Explore Architecture Engine</span>
+                <span className="w-4 h-4 rounded-full bg-[#8DA399]/20 text-[#2C3539] text-[10px] font-bold flex items-center justify-center">
+                  28
+                </span>
               </button>
             )}
 
@@ -124,7 +154,7 @@ export function LandingPage({
               type="button"
               onClick={handleSignIn}
               disabled={authLoading}
-              className="w-full sm:w-auto px-5 py-2.5 rounded bg-white border border-[#D1D8DB] hover:border-[#6B8E9B] text-[#2C3539] text-xs font-sans uppercase tracking-[0.05em] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
+              className="w-full sm:w-auto px-4 py-3 rounded-xl bg-white border border-[#D1D8DB] hover:border-[#6B8E9B] text-[#2C3539] text-xs font-sans uppercase tracking-[0.05em] transition-all cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {authLoading ? (
                 <span>Verifying...</span>
@@ -164,7 +194,7 @@ export function LandingPage({
       <footer className="border-t border-[#D1D8DB]/60 py-6 px-8 flex flex-col sm:flex-row items-center justify-between text-[13px] font-sans text-[#6B8E9B] gap-4">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#8DA399]"></span>
-          <span className="text-xs text-[#2C3539] font-serif italic">Serene Minimalist AI</span>
+          <span className="text-xs text-[#2C3539] font-serif italic">PAI Cognitive OS</span>
         </div>
 
         <div className="flex items-center gap-6 text-xs uppercase tracking-[0.05em]">
@@ -203,7 +233,7 @@ export function LandingPage({
                 onClick={onNavigateToCaseStudies}
                 className="hover:text-[#2C3539] transition-colors cursor-pointer"
               >
-                Case Studies (28)
+                Architecture Engine (28)
               </button>
             </>
           )}

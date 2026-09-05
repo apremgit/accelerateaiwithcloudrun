@@ -1,3 +1,5 @@
+export type TrackType = 'identity-secrets' | 'reasoning-engine' | 'vector-rag' | 'spatial-workspace';
+
 export type CertificationType = 
   | 'PCA' 
   | 'ACE' 
@@ -12,476 +14,239 @@ export interface CaseStudy {
   number: number;
   title: string;
   subtitle: string;
-  track: 'cloud-run' | 'agentic-ai' | 'security' | 'data-rag' | 'hybrid-dr';
+  track: TrackType;
   trackName: string;
   certifications: CertificationType[];
   challenge: string;
   solutionArchitecture: string;
+  asciiFlow: string;
   gcpServices: string[];
   metrics: string[];
-  codeSnippet: string;
   codeSnippetTitle: string;
+  codeSnippet: string;
   examTakeaway: string;
 }
 
 export const CASE_STUDIES: CaseStudy[] = [
-  // -------------------------------------------------------------------------
-  // TRACK 1: ACCELERATE AI WITH CLOUD RUN (Case Studies 1-6)
-  // -------------------------------------------------------------------------
+  // =========================================================================
+  // CATEGORY 1: IDENTITY, SOVEREIGNTY & SECRETS (Cards 01 - 07)
+  // =========================================================================
   {
-    id: 'cs-01-cold-start-elimination',
+    id: 'pai-01-firebase-auth-tenant-boundary',
     number: 1,
-    title: 'Cold-Start Elimination in GenAI Containers',
-    subtitle: 'Achieving sub-800ms cold starts with CPU boost and distroless multi-stage builds',
-    track: 'cloud-run',
-    trackName: 'Cloud Run & GenAI Inference',
-    certifications: ['ACE', 'PCA'],
-    challenge: 'Heavy AI runtime libraries (TypeScript SDKs, Webpack chunks, client bundles) can trigger 5-10s container cold-start delays when scaling from zero instances upon sudden traffic spikes.',
-    solutionArchitecture: 'Implement Docker multi-stage distroless base images to reduce container payload size from 1.2GB to 140MB. Pair with Google Cloud Run `--cpu-boost` flag which allocates 2x vCPU dynamically during the initialization phase before throttling to steady-state allocation.',
-    gcpServices: ['Cloud Run', 'Artifact Registry', 'Cloud Build', 'Cloud Monitoring'],
-    metrics: ['780ms p95 cold start', '88% image size reduction', '$0.00 idle cost'],
-    codeSnippetTitle: 'Cloud Run Deployment with Startup CPU Boost',
-    codeSnippet: `gcloud run deploy reflectai-app \\
-  --image=us-central1-docker.pkg.dev/$PROJECT_ID/app/reflectai:latest \\
-  --platform=managed \\
-  --region=us-central1 \\
-  --cpu-boost \\
-  --min-instances=0 \\
-  --max-instances=50 \\
-  --concurrency=80 \\
-  --memory=1Gi \\
-  --update-labels=dev-tutorial=cloud-run-ai-challenge`,
-    examTakeaway: 'For ACE & PCA exams: CPU boost doubles vCPU strictly during instance container startup without adding to steady-state memory billing, critical for meeting SLA on scale-to-zero GenAI workloads.'
-  },
-  {
-    id: 'cs-02-gpu-sidecar-vllm',
-    number: 2,
-    title: 'GPU Sidecar & vLLM Microservices on Cloud Run',
-    subtitle: 'Running high-throughput self-hosted open-weights models (Gemma 2) with Nvidia L4 GPUs',
-    track: 'cloud-run',
-    trackName: 'Cloud Run & GenAI Inference',
-    certifications: ['Enterprise AI', 'PCA'],
-    challenge: 'Enterprise data compliance mandates that sensitive employee thoughts remain on self-hosted model weights without egressing to public API endpoints, but dedicated GPU GKE clusters cost thousands monthly when idle.',
-    solutionArchitecture: 'Package vLLM serving Gemma 2 9B into a GPU-enabled Cloud Run container with an attached Nvidia L4 GPU (24GB VRAM). Configure autoscaling scale-to-zero with a 15-minute idle scale-down delay, cutting monthly GPU expenditure by 74%.',
-    gcpServices: ['Cloud Run GPUs', 'Artifact Registry', 'Cloud Storage', 'VPC Access Connector'],
-    metrics: ['28 tokens/sec throughput', '74% cost reduction vs GKE', 'Scale-to-zero on idle'],
-    codeSnippetTitle: 'Deploying Cloud Run with Nvidia L4 GPU Accelerator',
-    codeSnippet: `gcloud beta run deploy gemma-inference-service \\
-  --image=us-central1-docker.pkg.dev/$PROJECT_ID/models/vllm-gemma2:latest \\
-  --gpu=1 \\
-  --gpu-type=nvidia-l4 \\
-  --memory=32Gi \\
-  --cpu=8 \\
-  --region=us-central1 \\
-  --no-cpu-throttling \\
-  --max-instances=5`,
-    examTakeaway: 'PCA & AI Architect note: Cloud Run now supports hardware accelerators (Nvidia L4). Cloud Run with `--no-cpu-throttling` ensures background tensor memory processing finishes reliably between HTTP requests.'
-  },
-  {
-    id: 'cs-03-http2-streaming-sse',
-    number: 3,
-    title: 'HTTP/2 Streaming & Server-Sent Events (SSE)',
-    subtitle: 'Low-latency token-by-token thought generation without timeout dropouts',
-    track: 'cloud-run',
-    trackName: 'Cloud Run & GenAI Inference',
-    certifications: ['PCA', 'ACE'],
-    challenge: 'Long reflection responses from LLMs can take 15-30 seconds to fully generate. Standard HTTP/1.1 buffering causes proxies to time out or leaves users staring at blank loading spinners.',
-    solutionArchitecture: 'Leverage Cloud Run native HTTP/2 end-to-end multiplexing paired with Next.js App Router edge streaming (\`ReadableStream\`). Tokens generated by Gemini are piped directly over Server-Sent Events (SSE), delivering First-Token-Time (TTFT) under 320ms.',
-    gcpServices: ['Cloud Run', 'Gemini Flash API', 'Cloud Load Balancing'],
-    metrics: ['320ms Time to First Token (TTFT)', '0 connection drops', 'HTTP/2 multiplexing'],
-    codeSnippetTitle: 'Edge Streaming Route Handler in Next.js on Cloud Run',
-    codeSnippet: `export const runtime = 'nodejs';
+    title: 'Firebase Auth & Strict Tenant Boundary Enforcement',
+    subtitle: 'Cryptographic OAuth 2.0 JWT verification anchoring every serverless request',
+    track: 'identity-secrets',
+    trackName: 'Identity, Sovereignty & Secrets',
+    certifications: ['ACE', 'PCA', 'CSAE'],
+    challenge: 'Multi-tenant AI assistants handling deeply personal thoughts, proprietary coding snippets, and culinary experiments must guarantee that no request can execute without cryptographic identity verification.',
+    solutionArchitecture: 'Client authenticates via Google Identity Services and receives an encrypted Firebase JWT. Cloud Run middleware validates token signature, expiration, and audience claims before unpacking the verified UID into the request context.',
+    asciiFlow: `[Client / User]
+       │  (1) Google Sign-In Handshake
+       ▼
+[Firebase Authentication] ───> Returns Cryptographic JWT
+       │
+       │  (2) Bearer Token in HTTP Header
+       ▼
+[Cloud Run Middleware] ───> Validates Signature & Claims
+       │
+       ▼  (3) Verified UID Injected into Request Context
+[Firestore / BigQuery Backend]`,
+    gcpServices: ['Firebase Auth', 'Cloud Run', 'Google Identity Services', 'Cloud IAM'],
+    metrics: ['100% authenticated request boundary', '<15ms JWT verification overhead', 'Zero spoofed identities'],
+    codeSnippetTitle: 'Cloud Run Middleware Verifying Firebase JWT',
+    codeSnippet: `import { getAuth } from 'firebase-admin/auth';
 
-export async function POST(req: Request) {
-  const { prompt } = await req.json();
-  const stream = await geminiAi.models.generateContentStream({
-    model: 'gemini-2.5-flash',
-    contents: prompt,
-  });
-
-  const responseStream = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of stream) {
-        controller.enqueue(new TextEncoder().encode(chunk.text));
-      }
-      controller.close();
-    }
-  });
-
-  return new Response(responseStream, {
-    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' }
-  });
+export async function verifyUserAuth(req: Request): Promise<string> {
+  const authHeader = req.headers.get('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    throw new Error('UNAUTHENTICATED: Missing bearer token');
+  }
+  const token = authHeader.split('Bearer ')[1];
+  const decodedToken = await getAuth().verifyIdToken(token);
+  return decodedToken.uid; // Verified tenant ID anchored to Google Identity
 }`,
-    examTakeaway: 'For PCA: Cloud Run supports request timeouts up to 60 minutes (default 5m). Enabling HTTP/2 end-to-end allows long-lived duplex streaming connections without requiring WebSocket servers.'
+    examTakeaway: 'ACE & PCA: Decouple authentication from application logic by verifying Firebase OIDC tokens at the Cloud Run API edge, enforcing zero-trust identity before touching data layers.'
   },
   {
-    id: 'cs-04-eventarc-async-multimodal',
-    number: 4,
-    title: 'Eventarc & Asynchronous Multimodal Ingestion',
-    subtitle: 'Decoupling heavy voice and journal photo processing from user UI threads',
-    track: 'cloud-run',
-    trackName: 'Cloud Run & GenAI Inference',
-    certifications: ['ACE', 'PCA'],
-    challenge: 'Users uploading 5-minute audio voice memos or high-resolution handwritten journals cause HTTP timeouts and degrade interactive web app responsiveness if processed synchronously.',
-    solutionArchitecture: 'Directly upload raw media to Google Cloud Storage via signed URLs. Google Cloud Storage emits an \`audit-log\` or \`storage.object.v1.finalized\` event through Eventarc, which triggers a background Cloud Run worker service to transcribe, analyze, and commit results to Firestore.',
-    gcpServices: ['Eventarc', 'Cloud Storage', 'Cloud Run', 'Firestore', 'Gemini 2.5 Flash'],
-    metrics: ['Sub-100ms UI upload acknowledgment', '10,000 parallel batch capacity', 'Zero dropped jobs'],
-    codeSnippetTitle: 'Creating an Eventarc Trigger for Cloud Run Worker',
-    codeSnippet: `gcloud eventarc triggers create storage-voice-processor \\
-  --location=us-central1 \\
-  --destination-run-service=media-analysis-worker \\
-  --destination-run-region=us-central1 \\
-  --event-filters="type=google.cloud.storage.object.v1.finalized" \\
-  --event-filters="bucket=serene-ai-user-uploads" \\
-  --service-account=eventarc-invoker@$PROJECT_ID.iam.gserviceaccount.com`,
-    examTakeaway: 'For ACE & PCA: Eventarc converts Cloud Storage and 90+ GCP event sources into CloudEvents standards, routing them automatically to Cloud Run with automatic retries and dead-letter queues.'
-  },
-  {
-    id: 'cs-05-concurrency-memory-tuning',
-    number: 5,
-    title: 'Micro-VM Concurrency & Memory Pressure Tuning',
-    subtitle: 'Preventing container OOM crashes while optimizing instance packing density',
-    track: 'cloud-run',
-    trackName: 'Cloud Run & GenAI Inference',
-    certifications: ['ACE', 'PCA'],
-    challenge: 'Setting Cloud Run concurrency too high (e.g. 1000) causes out-of-memory crashes when multiple concurrent requests buffer large Gemini multimodal payloads; setting it too low (1) inflates infrastructure costs.',
-    solutionArchitecture: 'Profile Node.js V8 heap overhead under peak loads. Tune Cloud Run concurrency to 80 requests per container with 1GiB RAM and configure \`--max-instances=50\`. Container autoscale calculations: Instances = \`ceil(Peak Concurrent Requests / 80)\`.',
-    gcpServices: ['Cloud Run', 'Cloud Monitoring', 'Cloud Trace', 'Error Reporting'],
-    metrics: ['0 OOM terminations in 1M calls', '80 req/container packing density', '42% lower compute bill'],
-    codeSnippetTitle: 'Tuning Concurrency and Memory Quotas',
-    codeSnippet: `gcloud run services update reflectai-app \\
-  --concurrency=80 \\
-  --memory=1Gi \\
-  --cpu=1 \\
-  --timeout=120s \\
-  --max-instances=50 \\
-  --region=us-central1`,
-    examTakeaway: 'ACE Exam Rule: Cloud Run charges for resources strictly while requests are active when \`--no-cpu-throttling\` is off. Packing multiple requests via tuned concurrency dramatically lowers billable container-seconds.'
-  },
-  {
-    id: 'cs-06-canary-prompt-deployment',
-    number: 6,
-    title: 'Blue/Green & Canary Traffic Splitting for Model Prompts',
-    subtitle: 'Safely rolling out new system instructions and model versions with 0 downtime',
-    track: 'cloud-run',
-    trackName: 'Cloud Run & GenAI Inference',
-    certifications: ['ACE', 'PCA'],
-    challenge: 'Upgrading Gemini system instructions or swapping model tiers (e.g. 1.5 Flash to 2.5 Flash) can introduce unintended hallucinations or tone regression across active user reflection sessions.',
-    solutionArchitecture: 'Deploy the new prompt engine as an unpromoted revision. Use Cloud Run native revision traffic tags to route 10% of production traffic to \`canary\` and 90% to \`stable\`. Monitor user sentiment and latency metrics in Cloud Operations before executing a 100% instantaneous cutover.',
-    gcpServices: ['Cloud Run Revisions', 'Cloud Operations Suite', 'Artifact Registry'],
-    metrics: ['0-downtime prompt migration', 'Instant 1-second rollback capability', '10/90 canary split'],
-    codeSnippetTitle: 'Cloud Run 90/10 Canary Revision Traffic Split',
-    codeSnippet: `# Deploy new revision without routing traffic
-gcloud run deploy reflectai-app \\
-  --image=us-central1-docker.pkg.dev/$PROJECT_ID/app/reflectai:v2 \\
-  --no-traffic \\
-  --tag=v2-canary
-
-# Shift 10% traffic to canary and 90% to stable
-gcloud run services update-traffic reflectai-app \\
-  --to-tags=v2-canary=10,stable=90`,
-    examTakeaway: 'ACE & PCA Classic: Cloud Run revisions are immutable. Traffic splitting happens at the Google Andromeda software-defined edge proxy, meaning 0 downtime and instantaneous microsecond rollback.'
-  },
-
-  // -------------------------------------------------------------------------
-  // TRACK 2: AGENTIC AI & ENTERPRISE ORCHESTRATION (Case Studies 7-12)
-  // -------------------------------------------------------------------------
-  {
-    id: 'cs-07-vertex-langgraph-cloudrun',
-    number: 7,
-    title: 'Vertex AI Reasoning Engine & LangGraph on Cloud Run',
-    subtitle: 'Stateful multi-agent decision loops with Memorystore Redis checkpointing',
-    track: 'agentic-ai',
-    trackName: 'Agentic AI & Orchestration',
-    certifications: ['Enterprise AI', 'PCA'],
-    challenge: 'Autonomous AI agents need to maintain multi-step reasoning state across long-running tasks, but serverless Cloud Run containers are stateless and can terminate between conversational turns.',
-    solutionArchitecture: 'Run LangGraph agent state machines inside Cloud Run with state checkpoints externalized to Google Cloud Memorystore (Redis). Each agent turn saves its graph state in Redis, allowing any autoscaled container instance to resume execution seamlessly.',
-    gcpServices: ['Cloud Run', 'Memorystore for Redis', 'Serverless VPC Access', 'Vertex AI'],
-    metrics: ['100% state durability across container restarts', '<4ms state retrieval latency'],
-    codeSnippetTitle: 'LangGraph Redis Checkpointer Initialization',
-    codeSnippet: `import { StateGraph } from '@langchain/langgraph';
-import { RedisSaver } from '@langchain/langgraph-checkpoint-redis';
-
-const redisSaver = new RedisSaver({
-  host: process.env.REDIS_HOST, // Private IP from VPC Connector
-  port: 6379,
-});
-
-const workflow = new StateGraph(AgentState)
-  .addNode("triage", triageNode)
-  .addNode("research", researchNode)
-  .addEdge("triage", "research");
-
-export const agentApp = workflow.compile({ checkpointer: redisSaver });`,
-    examTakeaway: 'For Enterprise AI Architects: Serverless agents must be stateless at the compute tier while offloading memory to managed caching (Memorystore) connected via Serverless VPC Access.'
-  },
-  {
-    id: 'cs-08-autonomous-tool-calling-maps',
-    number: 8,
-    title: 'Autonomous Tool Calling with Google Maps & Places API',
-    subtitle: 'Deterministic JSON function calling for spatial travel & serenity agents',
-    track: 'agentic-ai',
-    trackName: 'Agentic AI & Orchestration',
-    certifications: ['Enterprise AI', 'ACE'],
-    challenge: 'LLMs naturally hallucinate locations, opening hours, and travel durations when asked to suggest physical sanctuaries for reflection and decompression.',
-    solutionArchitecture: 'Equip Gemini 2.5 Flash with strict function-calling declarations (\`tools: [{ functionDeclarations: [...] }]\`). When a user asks for a quiet park, Gemini produces an exact JSON tool call. Cloud Run executes the Google Places API (New) and Routes API, grounding the output in real geographic coordinates.',
-    gcpServices: ['Gemini API', 'Google Maps Platform', 'Places API (New)', 'Routes API'],
-    metrics: ['0% location hallucination', 'Real-time transit duration accuracy', 'Type-safe JSON output'],
-    codeSnippetTitle: 'Declaring Gemini Function Calling Tools in TypeScript',
-    codeSnippet: `const searchPlacesTool = {
-  name: 'searchQuietPlaces',
-  description: 'Searches nearby quiet parks and botanical gardens using Google Places',
-  parameters: {
-    type: 'OBJECT',
-    properties: {
-      location: { type: 'STRING', description: 'City or coordinates' },
-      radiusMeters: { type: 'NUMBER', description: 'Search radius' }
-    },
-    required: ['location']
-  }
-};
-
-const chat = ai.chats.create({
-  model: 'gemini-2.5-flash',
-  config: { tools: [{ functionDeclarations: [searchPlacesTool] }] }
-});`,
-    examTakeaway: 'PCA & AI Specialist: Function Calling does not execute code inside the model; the model produces structured JSON function arguments that your secure application backend executes, preventing prompt injection.'
-  },
-  {
-    id: 'cs-09-rag-vertex-search-grounding',
-    number: 9,
-    title: 'Grounding with Vertex AI Search & Enterprise Data',
-    subtitle: 'Augmenting generative models with real-time enterprise document retrieval',
-    track: 'agentic-ai',
-    trackName: 'Agentic AI & Orchestration',
-    certifications: ['Enterprise AI', 'PCA'],
-    challenge: 'Generic LLMs lack context regarding proprietary corporate mindfulness manuals, internal wellness guidelines, and private organizational knowledge bases.',
-    solutionArchitecture: 'Index enterprise policy PDFs in Google Cloud Storage and connect them to Vertex AI Search Data Stores. Enable Vertex AI Grounding in the Gemini API call so responses include verifiable source citations and page numbers with strict hallucination barriers.',
-    gcpServices: ['Vertex AI Search', 'Cloud Storage', 'Gemini 2.5 Pro/Flash', 'Cloud IAM'],
-    metrics: ['99.2% citation fidelity', 'Sub-second document retrieval', 'Automatic document chunking'],
-    codeSnippetTitle: 'Grounding Gemini with Vertex AI Search Data Store',
-    codeSnippet: `const response = await ai.models.generateContent({
-  model: 'gemini-2.5-flash',
-  contents: 'What are the enterprise wellness sabbatical policies?',
-  config: {
-    tools: [{
-      retrieval: {
-        vertexAiSearch: {
-          datastore: 'projects/' + PROJECT_ID + '/locations/global/collections/default_collection/dataStores/' + DATASTORE_ID
-        }
-      }
-    }]
-  }
-});`,
-    examTakeaway: 'For PCA: Vertex AI Search provides managed RAG without requiring manual vector databases, chunking algorithms, or embedding pipelines, dramatically reducing operational maintenance.'
-  },
-  {
-    id: 'cs-10-multi-agent-supervisor-hierarchy',
-    number: 10,
-    title: 'Multi-Agent Supervisor Hierarchy',
-    subtitle: 'Orchestrating specialized Triage, Research, and Verification agents over internal gRPC',
-    track: 'agentic-ai',
-    trackName: 'Agentic AI & Orchestration',
-    certifications: ['Enterprise AI', 'PCA'],
-    challenge: 'A single prompt cannot simultaneously handle user emotion empathy, historical journal lookup, and fact-checking without suffering attention degradation across long context lengths.',
-    solutionArchitecture: 'Deploy a multi-agent hierarchy: A "Supervisor Agent" routes prompts to specialized subagents ("Empathy Agent", "Memory Retrieval Agent", "Fact Verification Agent"). Services communicate internally over Cloud Run private service-to-service IAM authentication using gRPC.',
-    gcpServices: ['Cloud Run Private Ingress', 'Cloud IAM', 'Vertex AI', 'Cloud Service Mesh'],
-    metrics: ['3 specialized agents in parallel', '40% higher answer relevance', 'Full IAM mutual TLS encryption'],
-    codeSnippetTitle: 'Service-to-Service Private Cloud Run Ingress',
-    codeSnippet: `# Deploying worker agent accessible ONLY within VPC or authorized IAM callers
-gcloud run deploy verification-agent \\
-  --image=us-central1-docker.pkg.dev/$PROJECT_ID/agents/verifier:latest \\
-  --ingress=internal \\
-  --no-allow-unauthenticated \\
-  --region=us-central1`,
-    examTakeaway: 'PCA & Security: Using \`--ingress=internal\` restricts Cloud Run access exclusively to the internal VPC and authenticated GCP resources, completely blocking public internet attack vectors.'
-  },
-  {
-    id: 'cs-11-human-in-the-loop-cloud-tasks',
-    number: 11,
-    title: 'Human-in-the-Loop (HITL) Guardrails with Cloud Tasks',
-    subtitle: 'Pausing autonomous action execution pending user or clinical counselor authorization',
-    track: 'agentic-ai',
-    trackName: 'Agentic AI & Orchestration',
-    certifications: ['PCA', 'Enterprise AI'],
-    challenge: 'When an AI agent identifies severe distress or triggers high-impact external actions (like scheduling emergency counseling), autonomous execution must pause for explicit user confirmation.',
-    solutionArchitecture: 'Dispatch the proposed action into Google Cloud Tasks with an execution delay or pending webhook state. The user receives a gentle confirmation dialog; upon approval, Cloud Tasks invokes the action handler. If rejected or timed out, the task self-purges.',
-    gcpServices: ['Cloud Tasks', 'Cloud Run', 'Firestore', 'Firebase Cloud Messaging (FCM)'],
-    metrics: ['100% human audit trail', 'Millisecond dispatch queuing', 'Configurable expiration timers'],
-    codeSnippetTitle: 'Enqueuing a Human-in-the-Loop Approval Task',
-    codeSnippet: `const client = new CloudTasksClient();
-const parent = client.queuePath(PROJECT_ID, 'us-central1', 'agent-approvals');
-
-const task = {
-  httpRequest: {
-    httpMethod: 'POST',
-    url: 'https://reflectai-app-uc.a.run.app/api/agent/execute-approved',
-    headers: { 'Content-Type': 'application/json' },
-    body: Buffer.from(JSON.stringify({ actionId, userId, payload })).toString('base64'),
-    oidcToken: { serviceAccountEmail: TASK_INVOKER_SA }
-  },
-  scheduleTime: { seconds: Math.floor(Date.now() / 1000) + 300 } // 5 min review window
-};
-
-await client.createTask({ parent, task });`,
-    examTakeaway: 'For PCA: Cloud Tasks provides guaranteed at-least-once delivery, rate limiting, and scheduled execution with OIDC token service-account authentication.'
-  },
-  {
-    id: 'cs-12-context-caching-finops',
-    number: 12,
-    title: 'Context Window Caching for Massive Codebases & Journals',
-    subtitle: 'Slashing repeated token costs by 75% across frequent multi-turn conversations',
-    track: 'agentic-ai',
-    trackName: 'Agentic AI & Orchestration',
-    certifications: ['Enterprise AI', 'PCA'],
-    challenge: 'Passing 100,000+ tokens of personal journal history or large system instruction sets into Gemini on every conversational turn inflates API costs and increases latency.',
-    solutionArchitecture: 'Utilize Gemini Context Caching API. Large static reference corpora (e.g. 50+ past user reflections or multi-megabyte company manuals) are cached in Gemini servers with a configurable Time-To-Live (TTL). Subsequent turns only transmit new deltas at a 75% cost discount.',
-    gcpServices: ['Gemini API Context Caching', 'Cloud Run', 'Cloud Secret Manager'],
-    metrics: ['75% token cost reduction', '60% faster response latency', 'Configurable 1-hour to 7-day TTL'],
-    codeSnippetTitle: 'Creating a Reusable Gemini Context Cache',
-    codeSnippet: `const cache = await ai.caches.create({
-  model: 'gemini-2.5-flash',
-  config: {
-    ttl: '3600s', // 1 hour cached lifespan
-    contents: [{ role: 'user', parts: [{ text: userHistoricalReflectionsCorpus }] }],
-    systemInstruction: 'You are Serene AI, a compassionate sounding board.'
-  }
-});
-
-// Query against cached context with minimal new token overhead
-const response = await ai.models.generateContent({
-  model: 'gemini-2.5-flash',
-  contents: 'Based on my earlier reflections, what patterns emerged?',
-  config: { cachedContent: cache.name }
-});`,
-    examTakeaway: 'Enterprise AI FinOps: Gemini Context Caching requires a minimum token threshold (32k+ tokens) and delivers 4x lower input pricing for cached tokens, crucial for multi-turn agentic applications.'
-  },
-
-  // -------------------------------------------------------------------------
-  // TRACK 3: ENTERPRISE ZERO-TRUST, SECURITY & GOVERNANCE (Case Studies 13-18)
-  // -------------------------------------------------------------------------
-  {
-    id: 'cs-13-vpc-service-controls-perimeter',
-    number: 13,
-    title: 'VPC Service Controls (VPC-SC) Perimeter',
-    subtitle: 'Cryptographic data exfiltration barriers around Firestore, Cloud Storage & Vertex AI',
-    track: 'security',
-    trackName: 'Zero-Trust Security & Governance',
-    certifications: ['PCA', 'CSAE'],
-    challenge: 'A compromised developer credential or stolen service account key could allow malicious actors to dump entire Firestore journal databases or Vertex AI model artifacts to external storage buckets.',
-    solutionArchitecture: 'Enclose sensitive GCP resources within a VPC Service Controls Security Perimeter. Even with valid IAM permissions, API requests originating from outside the authorized VPC network or perimeter boundary are blocked by Google’s edge proxies with an exfiltration denial.',
-    gcpServices: ['VPC Service Controls', 'Access Context Manager', 'Firestore', 'Vertex AI', 'Cloud Storage'],
-    metrics: ['0 unauthorized egress routes', 'Complete mitigation of insider threat data theft'],
-    codeSnippetTitle: 'Defining an Access Policy Perimeter for VPC-SC',
-    codeSnippet: `gcloud access-context-manager perimeters create serene_ai_perimeter \\
-  --title="Serene AI Zero-Trust Vault" \\
-  --resources="projects/$PROJECT_NUMBER" \\
-  --restricted-services="firestore.googleapis.com,aiplatform.googleapis.com,storage.googleapis.com" \\
-  --policy=$ACCESS_POLICY_ID`,
-    examTakeaway: 'CSAE & PCA Essential: IAM controls "WHO" has access; VPC Service Controls controls "FROM WHERE" access is permitted, fundamentally preventing data exfiltration to unauthorized accounts.'
-  },
-  {
-    id: 'cs-14-iap-context-aware-access',
-    number: 14,
-    title: 'Identity-Aware Proxy (IAP) & Context-Aware Access',
-    subtitle: 'Zero-trust employee authentication without clunky enterprise VPN concentrators',
-    track: 'security',
-    trackName: 'Zero-Trust Security & Governance',
-    certifications: ['PCA', 'CSAE'],
-    challenge: 'Staff managing sensitive administrative consoles and clinical triage tools need access from remote locations without exposing admin URLs to the public internet or managing slow VPN tunnels.',
-    solutionArchitecture: 'Front internal administrative routes with Google Cloud Identity-Aware Proxy (IAP) over a Cloud Load Balancer. IAP validates user Google Identity and device health context (OS version, corporate certificate, geolocation) before proxying requests to Cloud Run.',
-    gcpServices: ['Identity-Aware Proxy (IAP)', 'Cloud Load Balancing', 'Access Context Manager', 'Cloud Run'],
-    metrics: ['VPN-less zero-trust access', 'Device-health policy enforcement', 'Sub-second login latency'],
-    codeSnippetTitle: 'Enabling IAP on Cloud Load Balancer Backend',
-    codeSnippet: `gcloud compute backend-services update serene-admin-backend \\
-  --iap=enabled,oauth2-client-id=$CLIENT_ID,oauth2-client-secret=$CLIENT_SECRET \\
-  --global`,
-    examTakeaway: 'For PCA & Security: IAP implements BeyondCorp zero-trust architecture by verifying user identity and context on every request at Google’s edge, removing the need for traditional network perimeters.'
-  },
-  {
-    id: 'cs-15-secret-manager-zero-exposure',
-    number: 15,
-    title: 'Secret Manager Runtime Injection & Zero Token Leakage',
-    subtitle: 'Eliminating hardcoded API keys through ephemeral container memory injection',
-    track: 'security',
-    trackName: 'Zero-Trust Security & Governance',
-    certifications: ['ACE', 'PCA'],
-    challenge: 'Accidentally committing \`.env.local\` files containing Gemini API keys or Firebase service account tokens to public GitHub repositories compromises company credentials in seconds.',
-    solutionArchitecture: 'Store all sensitive tokens in Google Cloud Secret Manager. Grant the Cloud Run default service account the narrow role \`roles/secretmanager.secretAccessor\`. Inject secrets directly into environment variables at container launch via Cloud Run \`--set-secrets\`.',
-    gcpServices: ['Cloud Secret Manager', 'Cloud IAM', 'Cloud Run'],
-    metrics: ['0 secrets stored in source code', 'Automatic key rotation capability', 'AES-256 encrypted at rest'],
-    codeSnippetTitle: 'Mounting Secret Manager Keys directly in Cloud Run',
-    codeSnippet: `gcloud run services update reflectai-app \\
-  --set-secrets=GEMINI_API_KEY=projects/$PROJECT_ID/secrets/gemini-api-key:latest,\\
-GOOGLE_MAPS_API_KEY=projects/$PROJECT_ID/secrets/maps-api-key:latest \\
-  --region=us-central1`,
-    examTakeaway: 'ACE & PCA Core Practice: Never package secrets into container images or Dockerfiles. Use \`--set-secrets\` to inject values as memory-mapped environment variables or mounted volume files.'
-  },
-  {
-    id: 'cs-16-workload-identity-federation',
-    number: 16,
-    title: 'Workload Identity Federation for Multi-Cloud & CI/CD',
-    subtitle: 'Deploying from GitHub Actions and AWS without downloadable JSON service account keys',
-    track: 'security',
-    trackName: 'Zero-Trust Security & Governance',
-    certifications: ['PCA', 'CSAE'],
-    challenge: 'Long-lived JSON service account keys downloaded for CI/CD pipelines represent the #1 vulnerability for credential leaks and cloud account compromise.',
-    solutionArchitecture: 'Establish Workload Identity Federation between GitHub Actions and Google Cloud IAM. GitHub uses short-lived OIDC tokens to authenticate with GCP STS (Security Token Service), trading them for temporary 1-hour credentials to deploy to Cloud Run.',
-    gcpServices: ['Workload Identity Federation', 'Cloud IAM', 'Cloud Run', 'Security Token Service'],
-    metrics: ['0 long-lived service account keys', '1-hour auto-expiring tokens', 'Cryptographic OIDC handshake'],
-    codeSnippetTitle: 'Setting up Workload Identity Pool for GitHub Actions',
-    codeSnippet: `gcloud iam workload-identity-pools create "github-pool" \\
-  --location="global" --description="GitHub Actions Pool"
-
-gcloud iam workload-identity-pools providers create-oidc "github-provider" \\
-  --workload-identity-pool="github-pool" \\
-  --issuer-uri="https://token.actions.githubusercontent.com" \\
-  --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository"`,
-    examTakeaway: 'PCA & Security Mandatory: Google recommends Workload Identity Federation over downloadable service account keys for all external workloads (AWS, GitHub, Azure, Kubernetes).'
-  },
-  {
-    id: 'cs-17-firestore-security-rules-abac',
-    number: 17,
-    title: 'Granular Firestore Security Rules with ABAC',
-    subtitle: 'Cryptographic owner isolation enforcing zero cross-tenant journal leakage',
-    track: 'security',
-    trackName: 'Zero-Trust Security & Governance',
-    certifications: ['CSAE', 'ACE'],
-    challenge: 'A rogue client SDK query must never be able to read, update, or delete another user\'s private thoughts or reflection entries, even if client code is modified in the browser DevTools.',
-    solutionArchitecture: 'Structure Firestore collections in a strict owner-partitioned hierarchy: \`/users/{userId}/entries/{entryId}\`. Enforce Attribute-Based Access Control (ABAC) in \`firestore.rules\` verifying that \`request.auth.uid == userId\` and validating payload timestamp formats.',
-    gcpServices: ['Cloud Firestore', 'Firebase Authentication', 'Security Rules'],
-    metrics: ['100% tenant isolation', 'Enforced at database core', 'Sub-millisecond rule evaluation'],
-    codeSnippetTitle: 'Production Firestore Security Rules Architecture',
+    id: 'pai-02-user-isolated-firestore-hierarchy',
+    number: 2,
+    title: 'User-Isolated Cloud Firestore Document Hierarchy',
+    subtitle: 'Atomic /users/{userId}/ document boundaries preventing cross-tenant leakage',
+    track: 'identity-secrets',
+    trackName: 'Identity, Sovereignty & Secrets',
+    certifications: ['ACE', 'CSAE'],
+    challenge: 'Even if a client-side web application is reverse-engineered or maliciously manipulated in browser DevTools, cross-tenant journal and memory reads must be rendered physically impossible by the database engine.',
+    solutionArchitecture: 'Structure all personal memory trees under `/users/{userId}/entries/{entryId}`. Enforce granular Firestore Security Rules that match `request.auth.uid == userId` and validate document schemas atomically at write time.',
+    asciiFlow: `[Browser Client API Query]
+       │
+       ▼  GET /users/{targetUserId}/entries
+[Cloud Firestore Engine]
+       │
+       ├─► Evaluates: request.auth.uid == targetUserId?
+       │     ├─► MATCH: Stream encrypted documents to client
+       │     └─► MISMATCH: Return PERMISSION_DENIED (HTTP 403)
+       ▼
+[Zero Data Leakage Boundary]`,
+    gcpServices: ['Cloud Firestore', 'Security Rules', 'Firebase Auth'],
+    metrics: ['Zero cross-tenant leakage', 'Sub-millisecond rule evaluation', 'Atomic server-side enforcement'],
+    codeSnippetTitle: 'Production Firestore Owner Isolation Rules',
     codeSnippet: `rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId}/entries/{entryId} {
+    match /users/{userId}/{document=**} {
+      // Strictly prevent any user from reading or modifying another user's cognitive state
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow create: if request.auth != null && request.auth.uid == userId
-                    && request.resource.data.content is string
-                    && request.resource.data.content.size() <= 20000;
     }
   }
 }`,
-    examTakeaway: 'For ACE & CSAE: Firestore Security Rules execute atomically on Google’s database servers. They cannot be bypassed by client-side tampering, securing multi-tenant applications effortlessly.'
+    examTakeaway: 'CSAE Core: Firestore Security Rules execute natively on Google database clusters. Tenant isolation must be hierarchical (`/users/{uid}`) to allow wildcard rule cascading with zero performance penalty.'
   },
   {
-    id: 'cs-18-cloud-armor-ddos-waf',
-    number: 18,
-    title: 'Cloud Armor DDoS Protection & Rate Limiting',
-    subtitle: 'Protecting serverless AI endpoints from malicious scraping and credential stuffing',
-    track: 'security',
-    trackName: 'Zero-Trust Security & Governance',
+    id: 'pai-03-secret-manager-runtime-vault',
+    number: 3,
+    title: 'GCP Secret Manager Ephemeral Runtime Ingestion',
+    subtitle: 'Eliminating hardcoded API keys through in-memory container secret injection',
+    track: 'identity-secrets',
+    trackName: 'Identity, Sovereignty & Secrets',
+    certifications: ['ACE', 'PCA'],
+    challenge: 'Developers storing Gemini API keys or service account credentials in `.env` files risk catastrophic credential leaks if code is committed to public Git repositories.',
+    solutionArchitecture: 'Store all API keys and credentials in Google Cloud Secret Manager. Grant the Cloud Run execution service account the narrow role `roles/secretmanager.secretAccessor`. Cloud Run mounts secrets directly into RAM environment variables at container startup.',
+    asciiFlow: `[GitHub Repo (Clean Code)] ───► Cloud Build (No Secrets in Dockerfile)
+                                       │
+                                       ▼
+                              [Artifact Registry]
+                                       │
+                                       ▼ Deploy Container
+[Cloud Secret Manager] ───────► [Cloud Run Instance]
+(Encrypted AES-256)             (In-Memory Environment Variables)
+                                 • GEMINI_API_KEY
+                                 • MAPS_API_KEY`,
+    gcpServices: ['Secret Manager', 'Cloud Run', 'Cloud IAM', 'Cloud KMS'],
+    metrics: ['0 secrets stored in source code', 'AES-256 cloud encryption at rest', 'Automated key rotation'],
+    codeSnippetTitle: 'Mounting Secret Manager Keys into Cloud Run',
+    codeSnippet: `gcloud run services update pai-app \\
+  --set-secrets=GEMINI_API_KEY=projects/$PROJECT_ID/secrets/gemini-api-key:latest,\\
+GOOGLE_MAPS_API_KEY=projects/$PROJECT_ID/secrets/maps-api-key:latest \\
+  --region=us-central1`,
+    examTakeaway: 'ACE & PCA Classic: Never embed secrets in Docker images. Use Cloud Run `--set-secrets` to inject values as environment variables from Secret Manager during instance cold start.'
+  },
+  {
+    id: 'pai-04-vpc-service-controls-perimeter',
+    number: 4,
+    title: 'VPC Service Controls (VPC-SC) Cryptographic Perimeter',
+    subtitle: 'Hardening Firestore, Cloud Storage, and BigQuery against insider exfiltration',
+    track: 'identity-secrets',
+    trackName: 'Identity, Sovereignty & Secrets',
+    certifications: ['PCA', 'CSAE'],
+    challenge: 'Compromised service account keys or malicious insider developers could potentially dump user memory collections and vector tables to unauthorized external buckets.',
+    solutionArchitecture: 'Enclose Firestore, BigQuery, and Vertex AI inside a VPC Service Controls Security Perimeter. Any API request originating outside the authorized VPC network or perimeter bridge is blocked by Google’s edge proxies with an access perimeter violation denial.',
+    asciiFlow: `[Public Internet] ───► [Blocked: PERIMETER_DENIED]
+                               │
+┌──────────────────────────────┼──────────────────────────────┐
+│  PAI VPC SERVICE CONTROLS    │                              │
+│                              ▼                              │
+│    [Cloud Run (VPC Egress)] ───► [Cloud Firestore]          │
+│                                  [BigQuery Vector Store]    │
+│                                  [Vertex AI Endpoints]      │
+└─────────────────────────────────────────────────────────────┘`,
+    gcpServices: ['VPC Service Controls', 'Access Context Manager', 'Firestore', 'BigQuery'],
+    metrics: ['Zero unauthorized egress pathways', 'Immune to stolen IAM key exfiltration'],
+    codeSnippetTitle: 'Creating a VPC Service Controls Perimeter',
+    codeSnippet: `gcloud access-context-manager perimeters create pai_vault_perimeter \\
+  --title="PAI Cognitive Data Vault" \\
+  --resources="projects/$PROJECT_NUMBER" \\
+  --restricted-services="firestore.googleapis.com,bigquery.googleapis.com,aiplatform.googleapis.com" \\
+  --policy=$ACCESS_POLICY_ID`,
+    examTakeaway: 'CSAE & PCA: IAM controls WHO is authenticated; VPC-SC controls FROM WHERE data is allowed to flow, providing a mandatory security perimeter for sensitive enterprise AI data.'
+  },
+  {
+    id: 'pai-05-iap-context-aware-access',
+    number: 5,
+    title: 'Identity-Aware Proxy (IAP) Context-Aware Administration',
+    subtitle: 'Zero-trust developer console access without corporate VPN bottlenecks',
+    track: 'identity-secrets',
+    trackName: 'Identity, Sovereignty & Secrets',
+    certifications: ['PCA', 'CSAE'],
+    challenge: 'Engineering staff managing PAI internal debugging consoles need secure remote access without exposing administrative endpoints to the public web or maintaining slow VPN tunnels.',
+    solutionArchitecture: 'Place Google Cloud Identity-Aware Proxy (IAP) in front of internal admin routes. IAP verifies Google Workspace identity, device compliance (screen lock, encrypted disk), and geolocation before allowing traffic into Cloud Run.',
+    asciiFlow: `[Engineer Browser]
+       │
+       ▼  HTTPS Request to /admin/memory-inspector
+[Google Edge Network]
+       │
+       ├─► [IAP Evaluation]
+       │     • Google Workspace OAuth Valid?
+       │     • Device Encrypted & Managed?
+       │     • Geolocation Allowed?
+       ▼
+[Cloud Run Admin Endpoint]`,
+    gcpServices: ['Identity-Aware Proxy (IAP)', 'Cloud Load Balancing', 'Access Context Manager'],
+    metrics: ['Zero exposed public admin ports', 'BeyondCorp zero-trust architecture', 'Instant user provisioning'],
+    codeSnippetTitle: 'Enabling IAP on Application Backend Service',
+    codeSnippet: `gcloud compute backend-services update pai-admin-backend \\
+  --iap=enabled,oauth2-client-id=$CLIENT_ID,oauth2-client-secret=$CLIENT_SECRET \\
+  --global`,
+    examTakeaway: 'PCA Core: IAP replaces traditional VPN concentrators by validating identity and device context at Google’s global edge PoPs before forwarding requests to internal services.'
+  },
+  {
+    id: 'pai-06-workload-identity-federation',
+    number: 6,
+    title: 'Workload Identity Federation for Multi-Cloud & CI/CD',
+    subtitle: 'Deploying from GitHub Actions without downloadable JSON service account keys',
+    track: 'identity-secrets',
+    trackName: 'Identity, Sovereignty & Secrets',
+    certifications: ['PCA', 'CSAE'],
+    challenge: 'Long-lived JSON service account keys stored in GitHub repository secrets represent the leading cause of enterprise cloud account breaches.',
+    solutionArchitecture: 'Establish Workload Identity Federation between GitHub Actions and Google Cloud IAM. GitHub Actions mints short-lived OIDC tokens exchanged via Google STS (Security Token Service) for temporary 1-hour credentials to deploy Cloud Run revisions.',
+    asciiFlow: `[GitHub Actions Runner]
+       │  (1) Mints Short-Lived OIDC Token
+       ▼
+[Google Cloud Security Token Service (STS)]
+       │  (2) Validates Token Signature & Repo Claims
+       ▼
+[Google Cloud IAM]
+       │  (3) Trades for Short-Lived Access Token (1h)
+       ▼
+[Deploy to Cloud Run via gcloud run deploy]`,
+    gcpServices: ['Workload Identity Federation', 'Security Token Service (STS)', 'Cloud IAM', 'Cloud Run'],
+    metrics: ['0 static service account keys', '1-hour auto-expiring tokens', 'Cryptographic OIDC assertion'],
+    codeSnippetTitle: 'Creating Workload Identity Pool for GitHub Actions',
+    codeSnippet: `gcloud iam workload-identity-pools create "pai-github-pool" \\
+  --location="global" --description="PAI GitHub Actions CI/CD Pool"
+
+gcloud iam workload-identity-pools providers create-oidc "github-provider" \\
+  --workload-identity-pool="pai-github-pool" \\
+  --issuer-uri="https://token.actions.githubusercontent.com" \\
+  --attribute-mapping="google.subject=assertion.sub,attribute.repository=assertion.repository"`,
+    examTakeaway: 'PCA & Security: Always recommend Workload Identity Federation over downloadable service account keys when integrating external CI/CD pipelines (GitHub, GitLab, AWS).'
+  },
+  {
+    id: 'pai-07-cloud-armor-waf-defense',
+    number: 7,
+    title: 'Cloud Armor DDoS Protection & Adaptive Rate Limiting',
+    subtitle: 'Shielding PAI inference endpoints from malicious scraping and LLM cost floods',
+    track: 'identity-secrets',
+    trackName: 'Identity, Sovereignty & Secrets',
     certifications: ['PCA', 'Network Specialist'],
-    challenge: 'Malicious bots spamming the \`/api/gemini/reflection\` endpoint can trigger thousands of dollars in LLM inference costs and exhaust API quota limits within minutes.',
-    solutionArchitecture: 'Place Google Cloud Armor Enterprise WAF in front of Cloud Run via a Global External Application Load Balancer. Implement rate-limiting rules restricting clients to 30 requests per IP per minute with adaptive pre-configured WAF rules against SQLi, XSS, and L7 floods.',
+    challenge: 'Automated bot traffic targeting PAI’s Gemini reflection endpoints can trigger massive unintended LLM token billing and exhaust API quota limits.',
+    solutionArchitecture: 'Deploy Google Cloud Armor Enterprise WAF in front of Cloud Run via a Global External Application Load Balancer. Configure rate-limiting rules enforcing a strict 30 requests/minute ceiling per IP with pre-configured WAF rules against injection and layer-7 floods.',
+    asciiFlow: `[Incoming Web Traffic]
+       │
+       ▼
+[Google Global Edge PoP (Cloud Armor WAF)]
+       ├─► Rate > 30 req/min? ──► Returns HTTP 429 Deny
+       ├─► Malicious SQLi/XSS? ──► Drops Connection
+       │
+       ▼ (Clean Traffic Only)
+[Cloud Run AI Services]`,
     gcpServices: ['Cloud Armor', 'Cloud Load Balancing', 'Cloud Run', 'Cloud Logging'],
-    metrics: ['100,000 req/sec DDoS scrubbing', 'Layer 7 bot blocking', 'Automated IP throttling'],
+    metrics: ['100,000 req/sec DDoS scrubbing capacity', 'Real-time IP rate limiting', 'Layer 7 bot blocking'],
     codeSnippetTitle: 'Cloud Armor Rate Limiting Security Policy',
-    codeSnippet: `gcloud compute security-policies create serene-waf-policy --description="Rate limiting AI endpoints"
+    codeSnippet: `gcloud compute security-policies create pai-waf-policy --description="Rate limiting PAI AI endpoints"
 
 gcloud compute security-policies rules create 1000 \\
-  --security-policy=serene-waf-policy \\
+  --security-policy=pai-waf-policy \\
   --expression="true" \\
   --action="rate-based-ban" \\
   --rate-limit-threshold-count=30 \\
@@ -489,260 +254,803 @@ gcloud compute security-policies rules create 1000 \\
   --ban-duration-sec=600 \\
   --conform-action=allow \\
   --exceed-action=deny-429`,
-    examTakeaway: 'For PCA: Cloud Armor inspects traffic at Google’s global edge PoPs before traffic ever reaches Cloud Run, saving both compute billing and protecting container capacity.'
+    examTakeaway: 'PCA Exam: Cloud Armor filters and rate-limits malicious traffic at Google’s global edge PoPs before requests ever hit Cloud Run containers, saving both compute resources and LLM API costs.'
   },
 
-  // -------------------------------------------------------------------------
-  // TRACK 4: MODERN DATA PIPELINES, RAG & VECTOR STORAGE (Case Studies 19-23)
-  // -------------------------------------------------------------------------
+  // =========================================================================
+  // CATEGORY 2: REASONING ENGINE & CONVERSATIONAL FLOW (Cards 08 - 14)
+  // =========================================================================
   {
-    id: 'cs-19-alloydb-scann-vector-search',
-    number: 19,
-    title: 'AlloyDB Omni & pgvector with ScaNN Indexing',
-    subtitle: 'Sub-5ms semantic similarity search across millions of reflective thoughts',
-    track: 'data-rag',
-    trackName: 'Data Mesh & Vector Stores',
-    certifications: ['PCA', 'Data Engineer'],
-    challenge: 'Searching through millions of historical user journal vectors using standard cosine distance in open-source PostgreSQL slows down dramatically as dataset size crosses 100,000 records.',
-    solutionArchitecture: 'Deploy Google Cloud AlloyDB with the ScaNN (Scalable Nearest Neighbors) vector index extension. AlloyDB Omni provides Google-developed vector indexing algorithms offering 4x faster vector search and 3x higher throughput than standard PostgreSQL pgvector.',
-    gcpServices: ['AlloyDB for PostgreSQL', 'ScaNN Vector Index', 'Cloud Run', 'Vertex AI Embeddings'],
-    metrics: ['4.2ms p99 vector query latency', '4x faster than vanilla pgvector', 'Enterprise ACID compliance'],
-    codeSnippetTitle: 'Creating a ScaNN Vector Index in AlloyDB',
-    codeSnippet: `CREATE EXTENSION IF NOT EXISTS alloydb_scann;
+    id: 'pai-08-gemini-multi-turn-orchestration',
+    number: 8,
+    title: 'Multi-Turn Conversational Orchestration via Gemini API',
+    subtitle: 'Stateful thought steering with grounded empathetic persona instructions',
+    track: 'reasoning-engine',
+    trackName: 'Reasoning Engine & Conversational Flow',
+    certifications: ['Enterprise AI', 'ACE'],
+    challenge: 'Generic single-turn LLM calls lose conversational thread context, forgetting previous reflections and giving disjointed advice across continuous user problem-solving dialogues.',
+    solutionArchitecture: 'Use the official `@google/genai` SDK to initialize multi-turn chat sessions with persistent system instructions. Gemini maintains conversational turn history in-session, generating thoughtful, context-aware responses anchored to the user’s cognitive state.',
+    asciiFlow: `[User Input: "My sourdough hydration was 78%..."]
+       │
+       ▼
+[Cloud Run API Route: /api/gemini/reflection]
+       │
+       ▼  Loads Verified Session History
+[Gemini 2.5 Flash Multi-Turn Chat]
+       │  • Grounded System Instruction: Compassionate Companion
+       │  • Previous Turns: Starter timing, dough feel, bake temp
+       ▼
+[Streaming Response: "Given that 78% felt sticky, let's adjust..."]`,
+    gcpServices: ['Gemini 2.5 Flash', '@google/genai SDK', 'Cloud Run'],
+    metrics: ['Sub-350ms TTFT latency', '100% conversation coherence', 'Zero context drift'],
+    codeSnippetTitle: 'Multi-Turn Chat Orchestration with @google/genai SDK',
+    codeSnippet: `import { GoogleGenAI } from '@google/genai';
 
-CREATE INDEX user_journal_embedding_idx ON journal_entries 
-USING scann (embedding cosine_distance) 
-WITH (num_leaves = 1000, quantizer = 'sq8');
+const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-SELECT entry_id, content, 
-       1 - (embedding <=> $query_embedding) AS similarity_score
-FROM journal_entries
-WHERE user_id = $user_id
-ORDER BY embedding <=> $query_embedding
-LIMIT 5;`,
-    examTakeaway: 'For Data Engineers & PCA: AlloyDB is a fully managed PostgreSQL-compatible database with an intelligent columnar engine and Google-patented ScaNN vector indexing for high-scale RAG.'
+export async function continueConversation(history: any[], latestMessage: string) {
+  const chat = ai.chats.create({
+    model: 'gemini-2.5-flash',
+    config: {
+      systemInstruction: 'You are PAI, an empathetic and highly structured cognitive companion.',
+      temperature: 0.7,
+    },
+    history: history,
+  });
+
+  const result = await chat.sendMessage({ message: latestMessage });
+  return result.text;
+}`,
+    examTakeaway: 'Enterprise AI: Use `@google/genai` Chats API rather than manually concatenating prompt strings. The SDK formats turn roles (`user` vs `model`) and handles chat history formatting natively.'
   },
   {
-    id: 'cs-20-bigquery-vector-search-embeddings',
-    number: 20,
-    title: 'BigQuery Vector Search & Gemini Embeddings in SQL',
-    subtitle: 'Unified operational analytics and semantic search across billions of records',
-    track: 'data-rag',
-    trackName: 'Data Mesh & Vector Stores',
+    id: 'pai-09-episodic-context-recovery',
+    number: 9,
+    title: '"Resume Where You Left Off" Context Recovery Engine',
+    subtitle: 'Reconstructing deep work and hobby mental states across days or weeks',
+    track: 'reasoning-engine',
+    trackName: 'Reasoning Engine & Conversational Flow',
+    certifications: ['Enterprise AI', 'PCA'],
+    challenge: 'When users return to complex coding tasks or sourdough baking projects after days of interruption, rebuilding their previous train of thought takes 15-20 minutes of mental friction.',
+    solutionArchitecture: 'PAI inspects the user’s most recent Firestore activity and BigQuery episodic vectors. It synthesizes a concise 3-bullet "Context Briefing" highlighting: where work stopped, the open question, and the exact next recommended micro-step.',
+    asciiFlow: `[User Launches PAI] ──► Query Last Active Context (/users/{uid}/entries)
+                               │
+                               ▼
+            [BigQuery Vector Search on Topic Cluster]
+                               │
+                               ▼
+        [Gemini 2.5 Flash Context Synthesis Engine]
+                               │
+                               ▼
+  [Context Briefing Card: "You stopped mid-refactor on auth middleware.
+   Next step: Verify token expiration handling." ]`,
+    gcpServices: ['Cloud Run', 'Firestore', 'BigQuery Vector Search', 'Gemini API'],
+    metrics: ['Zero cognitive restart penalty', 'Sub-second briefing generation', '85% faster time-to-flow'],
+    codeSnippetTitle: 'Generating Episodic Context Recovery Briefing',
+    codeSnippet: `export async function generateContextBriefing(lastSessionData: string) {
+  const prompt = \`The user is returning to their task after a break. 
+Review their last recorded mental state and generate a 3-bullet "Resume State" briefing:
+\${lastSessionData}
+Format: 1. Last focus, 2. Open bottleneck, 3. Immediate next step.\`;
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash',
+    contents: prompt,
+  });
+  return response.text;
+}`,
+    examTakeaway: 'Enterprise AI: Pair fast transactional state (Firestore) with analytical vector recall (BigQuery) to enable episodic memory resurrection for cognitive assistants.'
+  },
+  {
+    id: 'pai-10-automated-thought-brainstorming',
+    number: 10,
+    title: 'Automated Thought Brainstorming & Problem Decomposition',
+    subtitle: 'Transforming overwhelming cognitive blocks into structured decision trees',
+    track: 'reasoning-engine',
+    trackName: 'Reasoning Engine & Conversational Flow',
+    certifications: ['Enterprise AI', 'PCA'],
+    challenge: 'Users experiencing mental fatigue dump unstructured, chaotic thoughts that standard chatbots answer with generic unhelpful platitudes.',
+    solutionArchitecture: 'PAI applies structured chain-of-thought system prompts to decompose user streams into three distinct outputs: (1) Core Emotional State, (2) Root Technical/Practical Dilemma, and (3) Ordered Action Plan with clear trade-offs.',
+    asciiFlow: `[Raw Brain Dump: "Too many things to do, code failing, recipe burned..."]
+       │
+       ▼
+[Gemini Structured Decomposition Chain]
+       ├─► Output 1: Emotional Valence & Energy Level
+       ├─► Output 2: Extracted Technical Root Causes
+       └─► Output 3: 3 Concrete 10-Minute Next Actions
+       │
+       ▼
+[Rendered Cleanly in Serene Minimalist Cards]`,
+    gcpServices: ['Gemini 2.5 Flash', 'Cloud Run', 'Firestore'],
+    metrics: ['100% structured JSON output', 'Sub-400ms turnaround', 'High user calm satisfaction'],
+    codeSnippetTitle: 'Structured Cognitive Decomposition Prompt',
+    codeSnippet: `const response = await ai.models.generateContent({
+  model: 'gemini-2.5-flash',
+  contents: rawThoughtStream,
+  config: {
+    responseMimeType: 'application/json',
+    responseSchema: {
+      type: 'OBJECT',
+      properties: {
+        emotionalState: { type: 'STRING' },
+        coreBottleneck: { type: 'STRING' },
+        actionSteps: { type: 'ARRAY', items: { type: 'STRING' } }
+      },
+      required: ['emotionalState', 'coreBottleneck', 'actionSteps']
+    }
+  }
+});`,
+    examTakeaway: 'Enterprise AI: Use Gemini `responseMimeType: "application/json"` and `responseSchema` for guaranteed deterministic JSON output without parsing errors or regex workarounds.'
+  },
+  {
+    id: 'pai-11-4-tier-gemini-fallback-ladder',
+    number: 11,
+    title: '4-Tier Gemini Fallback Resilience Ladder',
+    subtitle: 'Automated cascade preventing 429 rate limit outages across AI providers',
+    track: 'reasoning-engine',
+    trackName: 'Reasoning Engine & Conversational Flow',
+    certifications: ['Enterprise AI', 'ACE'],
+    challenge: 'Sudden viral usage spikes or upstream regional API rate limits (HTTP 429) can interrupt a user’s mid-thought reflection session, causing severe frustration.',
+    solutionArchitecture: 'Implement an enterprise 4-tier model fallback ladder: Attempt Tier 1 (`gemini-2.5-flash`). If a 429 or 503 is returned, catch and cascade immediately to Tier 2 (`gemini-2.0-flash-lite`), Tier 3 (`gemini-flash-latest`), and Tier 4 (`gemini-2.5-pro`).',
+    asciiFlow: `[User Request]
+       │
+       ▼
+[Tier 1: gemini-2.5-flash] ──(429 Rate Limit?)──┐
+       │ (Success)                               │
+       ▼                                         ▼
+[Return Response]                 [Tier 2: gemini-2.0-flash-lite] ──(Fails?)──┐
+                                                 │                             │
+                                                 ▼ (Success)                   ▼
+                                          [Return Response]     [Tier 3: gemini-flash-latest]`,
+    gcpServices: ['Gemini API', 'Cloud Run', 'Cloud Logging', 'Cloud Monitoring'],
+    metrics: ['99.99% operational availability', '<180ms failover recovery', 'Zero dropped user thoughts'],
+    codeSnippetTitle: 'Enterprise 4-Tier Model Cascade Pattern',
+    codeSnippet: `const MODEL_LADDER = [
+  'gemini-2.5-flash',
+  'gemini-2.0-flash-lite',
+  'gemini-flash-latest',
+  'gemini-2.5-pro'
+];
+
+export async function generateWithFallback(prompt: string) {
+  for (const modelName of MODEL_LADDER) {
+    try {
+      return await ai.models.generateContent({ model: modelName, contents: prompt });
+    } catch (err: any) {
+      console.warn(\`Model \${modelName} throttled. Cascading to next tier...\`);
+    }
+  }
+  throw new Error('All AI service tiers exhausted');
+}`,
+    examTakeaway: 'For ACE & PCA: Build resiliency into cloud applications by implementing graceful degradation and automatic circuit breakers across upstream managed AI API tiers.'
+  },
+  {
+    id: 'pai-12-http2-streaming-sse',
+    number: 12,
+    title: 'HTTP/2 Streaming & Server-Sent Events (SSE) Delivery',
+    subtitle: 'Sub-300ms Time-to-First-Token streaming without proxy timeouts',
+    track: 'reasoning-engine',
+    trackName: 'Reasoning Engine & Conversational Flow',
+    certifications: ['PCA', 'ACE'],
+    challenge: 'Deep analytical thoughts from AI models can take 10-20 seconds to generate completely. Waiting for full generation leaves users staring at empty screens and risks gateway timeouts.',
+    solutionArchitecture: 'Configure Cloud Run end-to-end HTTP/2 multiplexing. Pipe tokens generated by Gemini directly through Next.js App Router edge `ReadableStream` over Server-Sent Events (SSE), achieving Time-to-First-Token (TTFT) under 280ms.',
+    asciiFlow: `[Gemini API] ──(Chunk Stream)──► [Cloud Run Next.js Runtime]
+                                           │
+                                           ▼ (SSE: text/event-stream)
+                               [HTTP/2 Multiplexed Proxy]
+                                           │
+                                           ▼ (Tokens arrive real-time)
+                               [Browser: Smooth Typewriter Effect]`,
+    gcpServices: ['Cloud Run (HTTP/2)', 'Gemini API Stream', 'Next.js App Router'],
+    metrics: ['280ms Time-to-First-Token', 'Zero proxy timeouts', 'Ultra-low client memory overhead'],
+    codeSnippetTitle: 'Next.js Edge Streaming Route Handler',
+    codeSnippet: `export const runtime = 'nodejs';
+
+export async function POST(req: Request) {
+  const { prompt } = await req.json();
+  const stream = await ai.models.generateContentStream({
+    model: 'gemini-2.5-flash',
+    contents: prompt,
+  });
+
+  const encoder = new TextEncoder();
+  const readable = new ReadableStream({
+    async start(controller) {
+      for await (const chunk of stream) {
+        controller.enqueue(encoder.encode(chunk.text));
+      }
+      controller.close();
+    }
+  });
+
+  return new Response(readable, {
+    headers: { 'Content-Type': 'text/event-stream', 'Cache-Control': 'no-cache' }
+  });
+}`,
+    examTakeaway: 'For PCA: Cloud Run natively supports HTTP/2 end-to-end. Streaming long responses prevents connection timeouts and delivers responsive user experiences on LLM workloads.'
+  },
+  {
+    id: 'pai-13-context-caching-skill-trees',
+    number: 13,
+    title: 'Context Window Caching for Massive User Skill Trees',
+    subtitle: 'Cutting repeated prompt token costs by 75% on large recurring corpora',
+    track: 'reasoning-engine',
+    trackName: 'Reasoning Engine & Conversational Flow',
+    certifications: ['Enterprise AI', 'PCA'],
+    challenge: 'Passing 50,000+ tokens of personal cooking sourdough logs, active codebase documentation, and historical journal entries on every query rapidly escalates input token billing.',
+    solutionArchitecture: 'Utilize Gemini Context Caching API. Upload the user’s static knowledge corpus into a Google Cloud context cache with an hourly or daily TTL. Subsequent conversational queries reference the cached identifier at a 75% input discount.',
+    asciiFlow: `[50,000 Token Sourdough & Code Corpus]
+       │
+       ▼ (1) Uploaded Once
+[Gemini Context Caching Server] (Assigned Cache ID: cache_987x)
+       │
+       ▲ (2) User asks: "How much hydration for batch #12?"
+       │     Transmits ONLY: 20 tokens + cache_987x
+       ▼
+[Inference Output at 75% Lower Cost]`,
+    gcpServices: ['Gemini Context Caching', 'Cloud Run', 'Cloud Secret Manager'],
+    metrics: ['75% token cost reduction', '60% faster prompt processing', 'Configurable 1h to 7d TTL'],
+    codeSnippetTitle: 'Creating Reusable Gemini Context Cache',
+    codeSnippet: `const cache = await ai.caches.create({
+  model: 'gemini-2.5-flash',
+  config: {
+    ttl: '7200s', // 2 hour cache lifespan
+    contents: [{ role: 'user', parts: [{ text: userMassiveSkillCorpus }] }],
+    systemInstruction: 'You are PAI, expert in the user\\'s personal culinary and coding methods.'
+  }
+});`,
+    examTakeaway: 'Enterprise AI: Context Caching drastically reduces costs when repeatedly querying corpora larger than 32k tokens, essential for personal AI companions with large knowledge bases.'
+  },
+  {
+    id: 'pai-14-human-in-the-loop-cloud-tasks',
+    number: 14,
+    title: 'Human-in-the-Loop (HITL) Guardrails via Cloud Tasks',
+    subtitle: 'Pausing autonomous action execution pending explicit user confirmation',
+    track: 'reasoning-engine',
+    trackName: 'Reasoning Engine & Conversational Flow',
+    certifications: ['PCA', 'Enterprise AI'],
+    challenge: 'When an AI companion suggests irreversible actions (e.g. deleting code repositories or triggering external calendar bookings), autonomous execution must pause for human review.',
+    solutionArchitecture: 'Enqueue the proposed action into Google Cloud Tasks with a pending confirmation state and delay timer. If the user clicks "Approve" in PAI’s UI, Cloud Tasks executes the webhook; if rejected or timed out, the task self-cancels.',
+    asciiFlow: `[Agent Proposes High-Impact Action]
+       │
+       ▼
+[Enqueued in Cloud Tasks Queue] ──(Pending Review State)──┐
+       │                                                 │
+       ▼                                                 ▼
+[UI Shows Confirmation Dialog]                 [5-Minute Expiration Timer]
+       │                                                 │
+       ├─► User Approves: Task Executes Webhook           └─► Times Out: Self-Purged
+       └─► User Rejects: Task Dropped`,
+    gcpServices: ['Cloud Tasks', 'Cloud Run', 'Firestore', 'Firebase Cloud Messaging'],
+    metrics: ['100% human-verified audit trail', 'Zero accidental destructive actions', 'Guaranteed task delivery'],
+    codeSnippetTitle: 'Enqueuing Human Approval Cloud Task',
+    codeSnippet: `const client = new CloudTasksClient();
+const parent = client.queuePath(PROJECT_ID, 'us-central1', 'pai-approvals');
+
+const task = {
+  httpRequest: {
+    httpMethod: 'POST',
+    url: 'https://pai-app-uc.a.run.app/api/actions/execute-approved',
+    headers: { 'Content-Type': 'application/json' },
+    body: Buffer.from(JSON.stringify({ actionId, userId, payload })).toString('base64'),
+    oidcToken: { serviceAccountEmail: TASK_INVOKER_SA }
+  },
+  scheduleTime: { seconds: Math.floor(Date.now() / 1000) + 300 }
+};
+
+await client.createTask({ parent, task });`,
+    examTakeaway: 'For PCA: Cloud Tasks enables asynchronous decoupling, rate limiting, and delayed execution with OIDC service-account verification for secure enterprise workflows.'
+  },
+
+  // =========================================================================
+  // CATEGORY 3: ANALYTICAL MEMORY & PERSISTENT VECTOR RAG (Cards 15 - 21)
+  // =========================================================================
+  {
+    id: 'pai-15-bigquery-vector-search-embeddings',
+    number: 15,
+    title: 'Google BigQuery Vector Search for Lifetime Skill Embeddings',
+    subtitle: 'Storing multi-year coding, cooking, and daily skill vectors in cloud data warehouses',
+    track: 'vector-rag',
+    trackName: 'Analytical Memory & Persistent Vector RAG',
     certifications: ['PCA', 'Data Engineer'],
-    challenge: 'Data teams managing AI pipelines typically need to export data into specialized vector databases (like Pinecone or Qdrant), introducing ETL pipeline failure points and synchronicity lag.',
-    solutionArchitecture: 'Keep analytics and vector embeddings directly inside Google BigQuery. Use \`ML.GENERATE_EMBEDDING\` to vectorize user feedback and execute \`VECTOR_SEARCH\` directly in BigQuery SQL queries without moving data across external vendors.',
-    gcpServices: ['BigQuery', 'BigQuery ML', 'Vertex AI Text-Embedding-004'],
-    metrics: ['0 ETL data transfer pipelines', 'Petabyte-scale search scalability', 'Single-query SQL interface'],
-    codeSnippetTitle: 'BigQuery SQL Vector Search Query',
-    codeSnippet: `SELECT query.query_text, base.entry_id, base.content, distance
+    challenge: 'A personal AI companion requires storing years of user journal entries, recipe iterations, and code architectural decisions without maintaining expensive dedicated vector database clusters.',
+    solutionArchitecture: 'Generate 768-dimensional embeddings using `text-embedding-004` and store them directly in partitioned BigQuery tables. Execute similarity lookups using BigQuery native `VECTOR_SEARCH` with COSINE distance directly in standard SQL.',
+    asciiFlow: `[User Entry / Recipe / Code Snippet]
+       │
+       ▼
+[Vertex AI: text-embedding-004] ──► Generates 768-dim Vector Float[]
+       │
+       ▼
+[BigQuery Table: \`pai_dw.user_skill_vectors\`]
+       │  (Partitioned by user_id & creation_date)
+       ▼
+[SQL: VECTOR_SEARCH() with COSINE Distance] ──► Returns Top-K Matches in <150ms`,
+    gcpServices: ['BigQuery', 'BigQuery Vector Search', 'Vertex AI Embeddings'],
+    metrics: ['Petabyte-scale vector capacity', 'Zero external vector DB maintenance', '<150ms query latency'],
+    codeSnippetTitle: 'Executing BigQuery Vector Search in SQL',
+    codeSnippet: `SELECT query.query_text, base.entry_id, base.category, base.content, distance
 FROM VECTOR_SEARCH(
-  TABLE \`serene_dw.journal_embeddings\`,
+  TABLE \`pai_dw.user_skill_vectors\`,
   'embedding',
-  (SELECT ml_generate_embedding_result AS query_embedding, 'peaceful nature' AS query_text
+  (SELECT ml_generate_embedding_result AS query_embedding, 'sourdough oven steam techniques' AS query_text
    FROM ML.GENERATE_EMBEDDING(
-     MODEL \`serene_dw.embedding_model\`,
-     (SELECT 'peaceful nature' AS content)
+     MODEL \`pai_dw.embedding_model\`,
+     (SELECT 'sourdough oven steam techniques' AS content)
    )),
   top_k => 5,
   distance_type => 'COSINE'
-);`,
-    examTakeaway: 'For Data Engineers: BigQuery Vector Search merges enterprise data warehousing with vector similarity search in a single SQL statement, eliminating external vector database silos.'
+)
+WHERE base.user_id = @current_user_id;`,
+    examTakeaway: 'Data Engineer & PCA: BigQuery Vector Search combines enterprise analytical storage with high-speed vector similarity search, eliminating the need for standalone vector databases like Pinecone.'
   },
   {
-    id: 'cs-21-firestore-bigquery-realtime-cdc',
-    number: 21,
+    id: 'pai-16-bigquery-rag-retrieval-pipeline',
+    number: 16,
+    title: 'BigQuery RAG Pipeline for Long-Term Memory Resurrection',
+    subtitle: 'Fusing semantic vector retrieval with Gemini reasoning for accurate recall',
+    track: 'vector-rag',
+    trackName: 'Analytical Memory & Persistent Vector RAG',
+    certifications: ['Enterprise AI', 'Data Engineer'],
+    challenge: 'When a user asks: "What did I do last time my sourdough crust came out too hard?", the AI must locate exact notes written 8 months ago and synthesize the diagnosis accurately.',
+    solutionArchitecture: 'Cloud Run vectorizes the user’s query, executes `VECTOR_SEARCH` in BigQuery filtered by `user_id`, and feeds the top 3 matching historical context passages into Gemini’s prompt context for grounded synthesis.',
+    asciiFlow: `[User Question: "Why was my crust hard last winter?"]
+       │
+       ▼
+[Vectorize Query via text-embedding-004]
+       │
+       ▼
+[BigQuery RAG Search] ──► Matches: Entry #42 (Nov 14: "Baked at 475F with no ice cubes")
+       │
+       ▼
+[Gemini 2.5 Flash Grounded Generation]
+       │
+       ▼
+["Last November, you noted you omitted the ice cube steam pan, causing thick crust." ]`,
+    gcpServices: ['BigQuery', 'Cloud Run', 'Gemini 2.5 Flash', 'Vertex AI'],
+    metrics: ['99.4% factual recall precision', 'Zero fabricated memories', 'Sub-second end-to-end turnaround'],
+    codeSnippetTitle: 'RAG Context Injection into Gemini',
+    codeSnippet: `export async function answerWithRAG(userQuery: string, userId: string) {
+  const contextRows = await queryBigQueryVectorSearch(userQuery, userId);
+  const formattedContext = contextRows.map(r => \`[\${r.date} - \${r.category}]: \${r.content}\`).join('\\n\\n');
+
+  const prompt = \`Context from user's persistent memory:
+\${formattedContext}
+
+Question: \${userQuery}
+Answer grounded strictly in the retrieved memory above.\`;
+
+  const result = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
+  return result.text;
+}`,
+    examTakeaway: 'Enterprise AI: Grounding RAG pipelines with user-filtered BigQuery vectors prevents cross-tenant data leaks and ensures memories are anchored strictly to verifiable history.'
+  },
+  {
+    id: 'pai-17-bigquery-mcp-tool-server',
+    number: 17,
+    title: 'Model Context Protocol (MCP) Server for BigQuery Tooling',
+    subtitle: 'Exposing BigQuery analytical queries as native tool calls to AI agents',
+    track: 'vector-rag',
+    trackName: 'Analytical Memory & Persistent Vector RAG',
+    certifications: ['Enterprise AI', 'PCA'],
+    challenge: 'AI agents need to run complex SQL aggregations (e.g. "How many hours of coding did I log each week this month?") without exposing raw database credentials to the client.',
+    solutionArchitecture: 'Deploy a Model Context Protocol (MCP) server container on Cloud Run. When Gemini decides to query memory metrics, it emits a standardized MCP tool call which the server executes securely against BigQuery before returning JSON data.',
+    asciiFlow: `[User: "How many baking sessions did I record in July?"]
+       │
+       ▼
+[Gemini 2.5 Flash] ──► Emits MCP Tool Call: query_bigquery_memory(sql)
+       │
+       ▼
+[BigQuery MCP Server on Cloud Run]
+       │  • Validates SQL Syntax
+       │  • Enforces User Security Filter
+       ▼
+[BigQuery Engine] ──► Returns: { count: 8, avg_rating: 4.8 }
+       │
+       ▼
+[Gemini Synthesizes Final Friendly Response]`,
+    gcpServices: ['Cloud Run', 'BigQuery', 'Model Context Protocol (MCP)', 'Cloud IAM'],
+    metrics: ['Standardized open protocol', 'Zero raw SQL exposure to browser', 'Full audit logging in Cloud Operations'],
+    codeSnippetTitle: 'Declaring BigQuery Tool in MCP Server',
+    codeSnippet: `import { Server } from '@modelcontextprotocol/sdk/server';
+
+const server = new Server({ name: 'pai-bigquery-mcp', version: '1.0.0' });
+
+server.setRequestHandler('tools/call', async (request) => {
+  if (request.params.name === 'query_user_memory') {
+    const { sqlQuery, userId } = request.params.arguments;
+    // Execute parameterized BigQuery query safe from SQL injection
+    const [rows] = await bigquery.query({ query: sqlQuery, params: { userId } });
+    return { content: [{ type: 'text', text: JSON.stringify(rows) }] };
+  }
+});`,
+    examTakeaway: 'Enterprise AI: Model Context Protocol (MCP) provides a standardized, vendor-neutral tool interface enabling LLMs to safely query databases and enterprise APIs.'
+  },
+  {
+    id: 'pai-18-alloydb-scann-low-latency-search',
+    number: 18,
+    title: 'AlloyDB Omni & pgvector with ScaNN Indexing',
+    subtitle: 'Sub-5ms interactive vector lookups for high-frequency conversational turns',
+    track: 'vector-rag',
+    trackName: 'Analytical Memory & Persistent Vector RAG',
+    certifications: ['PCA', 'Data Engineer'],
+    challenge: 'Executing vector similarity queries directly during rapid multi-turn chats requires ultra-low sub-10ms query latency which standard PostgreSQL pgvector cannot sustain at scale.',
+    solutionArchitecture: 'Deploy Google Cloud AlloyDB for PostgreSQL with the ScaNN (Scalable Nearest Neighbors) indexing engine. AlloyDB Omni provides Google’s proprietary vector quantization algorithms delivering 4x faster vector search than open-source pgvector.',
+    asciiFlow: `[Real-Time Conversational Turn]
+       │
+       ▼  Vector Embeddings
+[AlloyDB Omni (PostgreSQL Compatible)]
+       │
+       ├─► ScaNN Vector Index (num_leaves=1000, quantizer='sq8')
+       │
+       ▼
+[Sub-5ms Nearest Neighbor Vector Matches Retrieved]`,
+    gcpServices: ['AlloyDB for PostgreSQL', 'ScaNN Vector Engine', 'Cloud Run', 'VPC Connector'],
+    metrics: ['4.2ms p99 query latency', '4x faster than standard pgvector', 'Enterprise ACID transactions'],
+    codeSnippetTitle: 'Creating ScaNN Vector Index in AlloyDB',
+    codeSnippet: `CREATE EXTENSION IF NOT EXISTS alloydb_scann;
+
+CREATE INDEX user_memory_scann_idx ON memory_embeddings 
+USING scann (embedding cosine_distance) 
+WITH (num_leaves = 1000, quantizer = 'sq8');
+
+SELECT entry_id, content, 1 - (embedding <=> $query_vector) AS similarity
+FROM memory_embeddings
+WHERE user_id = $user_id
+ORDER BY embedding <=> $query_vector
+LIMIT 5;`,
+    examTakeaway: 'Data Engineer & PCA: AlloyDB with ScaNN provides low-latency transactional vector search for real-time applications, complementing BigQuery’s batch analytical vector search.'
+  },
+  {
+    id: 'pai-19-firestore-bigquery-cdc-pipeline',
+    number: 19,
     title: 'Firestore to BigQuery Real-Time CDC Pipeline',
-    subtitle: 'Streaming operational document updates into enterprise data lakes with zero code',
-    track: 'data-rag',
-    trackName: 'Data Mesh & Vector Stores',
+    subtitle: 'Streaming operational document updates into analytical memory with zero code',
+    track: 'vector-rag',
+    trackName: 'Analytical Memory & Persistent Vector RAG',
     certifications: ['Data Engineer', 'ACE'],
-    challenge: 'Business intelligence analysts need to track user engagement, sentiment trends, and reflection frequencies without burdening the production Firestore NoSQL transactional database.',
-    solutionArchitecture: 'Deploy the official Firebase "Stream Firestore to BigQuery" extension. Every document insert, update, or deletion in \`/users/{userId}/entries\` generates a change event automatically streamed to BigQuery tables partitioned by ingestion timestamp.',
+    challenge: 'Synchronizing user entries written in Firestore into BigQuery for vector analysis without maintaining complex custom message queues or ETL pipeline servers.',
+    solutionArchitecture: 'Deploy the official Firebase "Stream Firestore to BigQuery" extension. Every document write or update in `/users/{userId}/entries` automatically emits a change event streamed into partitioned BigQuery changelog tables.',
+    asciiFlow: `[User Saves Reflection / Recipe in App]
+       │
+       ▼
+[Cloud Firestore Document Write]
+       │
+       ▼ (Automatic CDC Event Stream)
+[Firebase Extension: Stream to BigQuery]
+       │
+       ▼
+[BigQuery Partitioned Table: \`pai_dw.entries_changelog\`]
+       │
+       ▼ (Scheduled Vector Embeddings Run)
+[Vertex AI text-embedding-004]`,
     gcpServices: ['Cloud Firestore', 'BigQuery', 'Firebase Extensions', 'Cloud Functions'],
-    metrics: ['Sub-second CDC streaming', '0 impact on operational Firestore read/write quotas'],
-    codeSnippetTitle: 'BigQuery Querying Deduplicated Real-Time Journal Stream',
+    metrics: ['Sub-second CDC replication', 'Zero custom ETL maintenance', 'Zero performance drain on Firestore'],
+    codeSnippetTitle: 'Querying Deduplicated Latest Entries in BigQuery',
     codeSnippet: `SELECT 
   document_name,
-  JSON_VALUE(data, '$.mood') AS user_mood,
-  JSON_VALUE(data, '$.wordCount') AS entry_length,
+  JSON_VALUE(data, '$.category') AS skill_category,
+  JSON_VALUE(data, '$.content') AS content_body,
   timestamp
-FROM \`serene_dw.firestore_entries_raw_changelog\`
+FROM \`pai_dw.firestore_entries_raw_changelog\`
 WHERE operation != 'DELETE'
 QUALIFY ROW_NUMBER() OVER (PARTITION BY document_name ORDER BY timestamp DESC) = 1;`,
-    examTakeaway: 'For ACE & Data Engineers: Change Data Capture (CDC) via Firebase Extensions streams operational NoSQL changes directly to BigQuery raw changelog tables without writing custom pub/sub extractors.'
+    examTakeaway: 'For ACE & Data Engineers: Use Firebase Extensions for real-time Change Data Capture (CDC) from Firestore into BigQuery, avoiding custom cron jobs or fragile batch export scripts.'
   },
   {
-    id: 'cs-22-document-ai-multimodal-pipeline',
-    number: 22,
-    title: 'Handwritten Journal Digitization with Document AI',
-    subtitle: 'Extracting clean text and emotion cues from paper journals before LLM ingestion',
-    track: 'data-rag',
-    trackName: 'Data Mesh & Vector Stores',
+    id: 'pai-20-document-ai-multimodal-ingestion',
+    number: 20,
+    title: 'Handwritten Culinary & Code Digitization via Document AI',
+    subtitle: 'Extracting clean text from paper recipe cards and whiteboard sketches',
+    track: 'vector-rag',
+    trackName: 'Analytical Memory & Persistent Vector RAG',
     certifications: ['Enterprise AI', 'PCA'],
-    challenge: 'Users photograph their physical paper journals. Direct image OCR with standard vision models fails on messy cursive handwriting and skewed camera angles.',
-    solutionArchitecture: 'Route scanned journal images through Google Cloud Document AI Handwriting OCR processor. Document AI normalizes contrast, detects paragraph blocks, and outputs structured text and bounding boxes with confidence scores before feeding the text to Gemini.',
-    gcpServices: ['Document AI', 'Cloud Storage', 'Cloud Run', 'Firestore'],
-    metrics: ['96.4% cursive handwriting accuracy', 'Automatic image deskewing and cleanup'],
-    codeSnippetTitle: 'Processing Scanned Journals via Document AI Node.js SDK',
+    challenge: 'Users upload messy photos of grandmother’s handwritten recipe cards or whiteboard architectural code drawings that standard OCR engines fail to parse accurately.',
+    solutionArchitecture: 'Route uploaded image buffers through Google Cloud Document AI Handwriting OCR processor. Document AI deskews images, detects language blocks, and outputs structured text with character confidence scores before vectorizing into BigQuery.',
+    asciiFlow: `[Photo of Handwritten Sourdough Card]
+       │
+       ▼
+[Cloud Storage Signed Upload URL]
+       │
+       ▼
+[Google Cloud Document AI (Handwriting Processor)]
+       │  • Image deskewing & contrast normalization
+       │  • Cursive handwriting recognition
+       ▼
+[Extracted Text & Bounding Boxes] ──► [Stored in BigQuery & Vectorized]`,
+    gcpServices: ['Document AI', 'Cloud Storage', 'Cloud Run', 'BigQuery'],
+    metrics: ['96.8% handwriting OCR accuracy', 'Automatic image deskewing', 'Native multilingual support'],
+    codeSnippetTitle: 'Processing Scanned Images with Document AI SDK',
     codeSnippet: `const { DocumentProcessorServiceClient } = require('@google-cloud/documentai').v1;
 const client = new DocumentProcessorServiceClient();
 
-const name = 'projects/' + PROJECT_ID + '/locations/us/processors/' + PROCESSOR_ID;
-const [result] = await client.processDocument({
-  name,
-  rawDocument: { content: imageBuffer, mimeType: 'image/jpeg' }
-});
-
-const extractedText = result.document.text;`,
-    examTakeaway: 'Enterprise AI: Document AI is purpose-built for enterprise document parsing, forms, and handwriting, delivering superior accuracy over generic OCR for document digitization.'
+export async function parseHandwrittenNotes(imageBuffer: Buffer) {
+  const name = \`projects/\${PROJECT_ID}/locations/us/processors/\${PROCESSOR_ID}\`;
+  const [result] = await client.processDocument({
+    name,
+    rawDocument: { content: imageBuffer, mimeType: 'image/jpeg' }
+  });
+  return result.document.text;
+}`,
+    examTakeaway: 'Enterprise AI: Document AI specialized processors provide superior character recognition over generic computer vision for forms, handwriting, and complex layout documents.'
   },
   {
-    id: 'cs-23-cloud-dlp-prompt-pii-redaction',
-    number: 23,
-    title: 'Cloud DLP Prompt Redaction & Sensitive Data Shield',
-    subtitle: 'Automatically stripping PII and financial numbers before reaching LLM API endpoints',
-    track: 'data-rag',
-    trackName: 'Data Mesh & Vector Stores',
+    id: 'pai-21-cloud-dlp-prompt-redaction',
+    number: 21,
+    title: 'Cloud DLP Inline Prompt PII Masking & De-Identification',
+    subtitle: 'Stripping credentials, phone numbers, and IDs before reaching LLM endpoints',
+    track: 'vector-rag',
+    trackName: 'Analytical Memory & Persistent Vector RAG',
     certifications: ['CSAE', 'PCA'],
-    challenge: 'Users frequently vent personal thoughts that contain sensitive personal data (Aadhaar cards, Social Security numbers, bank balances, or real full names) which violates enterprise compliance if stored in model training logs.',
-    solutionArchitecture: 'Place Google Cloud Sensitive Data Protection (Cloud DLP) as an inline proxy before the Gemini SDK call. Cloud DLP inspects text against \`INFO_TYPE\` dictionaries, replacing names, phone numbers, and IDs with tokens (e.g. \`[REDACTED_PHONE]\`) in real-time.',
-    gcpServices: ['Cloud DLP (Sensitive Data Protection)', 'Cloud Run', 'Gemini API'],
-    metrics: ['100% PII redaction accuracy', '<12ms inspection latency', 'HIPAA & GDPR compliance'],
+    challenge: 'Users brainstorming technical code or personal notes frequently paste real API secrets, credit card numbers, or full personal names that must never be stored in LLM vendor logs.',
+    solutionArchitecture: 'Place Google Cloud Sensitive Data Protection (Cloud DLP) as an inline proxy before the Gemini SDK call. Cloud DLP scans text against `INFO_TYPE` dictionaries, transforming private tokens into generic masks (e.g. `[REDACTED_API_KEY]`) in real time.',
+    asciiFlow: `[User Input: "My AWS key is AKIA... and email is user@test.com"]
+       │
+       ▼
+[Cloud DLP (Sensitive Data Protection)]
+       │  • Scans against INFO_TYPE detectors
+       │  • Replaces sensitive values with tokens
+       ▼
+[Sanitized: "My AWS key is [REDACTED_KEY] and email is [REDACTED_EMAIL]"]
+       │
+       ▼
+[Gemini 2.5 Flash API (Zero PII Exposure)]`,
+    gcpServices: ['Cloud DLP', 'Cloud Run', 'Gemini API', 'Cloud KMS'],
+    metrics: ['100% automated PII masking', '<12ms inspection latency', 'Strict GDPR & HIPAA compliance'],
     codeSnippetTitle: 'Inline Cloud DLP De-identification Call',
     codeSnippet: `const { DlpServiceClient } = require('@google-cloud/dlp');
 const dlp = new DlpServiceClient();
 
-const [response] = await dlp.deidentifyContent({
-  parent: 'projects/' + PROJECT_ID + '/locations/global',
-  deidentifyConfig: {
-    infoTypeTransformations: {
-      transformations: [{
-        primitiveTransformation: { replaceWithInfoTypeConfig: {} },
-        infoTypes: [{ name: 'PHONE_NUMBER' }, { name: 'EMAIL_ADDRESS' }, { name: 'US_SOCIAL_SECURITY_NUMBER' }]
-      }]
-    }
+export async function redactSensitiveData(rawText: string) {
+  const [response] = await dlp.deidentifyContent({
+    parent: \`projects/\${PROJECT_ID}/locations/global\`,
+    deidentifyConfig: {
+      infoTypeTransformations: {
+        transformations: [{
+          primitiveTransformation: { replaceWithInfoTypeConfig: {} },
+          infoTypes: [{ name: 'EMAIL_ADDRESS' }, { name: 'PHONE_NUMBER' }, { name: 'AUTH_TOKEN' }]
+        }]
+      }
+    },
+    item: { value: rawText }
+  });
+  return response.item.value;
+}`,
+    examTakeaway: 'CSAE & PCA: Cloud DLP provides automated discovery, classification, and de-identification of sensitive data across text streams, files, and BigQuery tables.'
   },
-  item: { value: rawUserInput }
-});
 
-const sanitizedPrompt = response.item.value;`,
-    examTakeaway: 'CSAE & Security: Cloud DLP (Sensitive Data Protection) provides automated inspection and tokenization/masking across text, images, and BigQuery tables to satisfy strict privacy regulations.'
-  },
-
-  // -------------------------------------------------------------------------
-  // TRACK 5: HIGH AVAILABILITY, DR & HYBRID MULTI-CLOUD (Case Studies 24-28)
-  // -------------------------------------------------------------------------
+  // =========================================================================
+  // CATEGORY 4: SPATIAL & WORKSPACE INTEGRATIONS (Cards 22 - 28)
+  // =========================================================================
   {
-    id: 'cs-24-multi-region-active-active',
+    id: 'pai-22-google-maps-spatial-grounding',
+    number: 22,
+    title: 'Google Maps Platform Server Proxy for Spatial Journaling',
+    subtitle: 'Grounding memory reflections in physical coordinates without exposing API keys',
+    track: 'spatial-workspace',
+    trackName: 'Spatial & Workspace Integrations',
+    certifications: ['Enterprise AI', 'ACE'],
+    challenge: 'Users tagging favorite local bakeries, quiet parks, or travel memories need interactive maps, but embedding unrestricted Google Maps API keys in client-side HTML risks quota theft.',
+    solutionArchitecture: 'Route all Google Maps requests through a secure Cloud Run server proxy. The server validates user session tokens, injects the server-side API key from Secret Manager, and queries Places API (New) and Routes API with strict response field masking.',
+    asciiFlow: `[Client UI] ──(Session Authenticated)──► [Cloud Run Proxy: /api/maps/places]
+                                                   │
+                                                   ▼ Injects MAPS_API_KEY from Secret Manager
+                                      [Google Places API (New)]
+                                                   │
+                                                   ▼ Returns Field-Masked GeoJSON
+                                      [Client Renders @vis.gl/react-google-maps]`,
+    gcpServices: ['Google Maps Platform', 'Places API (New)', 'Routes API', 'Cloud Run', 'Secret Manager'],
+    metrics: ['0 client-exposed API keys', 'Strict field masking billing optimization', 'Sub-150ms proxy latency'],
+    codeSnippetTitle: 'Server-Side Google Places API Proxy Route',
+    codeSnippet: `export async function POST(req: Request) {
+  const { query, location } = await req.json();
+  const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+
+  const res = await fetch('https://places.googleapis.com/v1/places:searchText', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Goog-Api-Key': apiKey!,
+      'X-Goog-FieldMask': 'places.id,places.displayName,places.formattedAddress,places.location',
+    },
+    body: JSON.stringify({ textQuery: query, maxResultCount: 5 }),
+  });
+  return Response.json(await res.json());
+}`,
+    examTakeaway: 'ACE & PCA: Always proxy third-party API keys through backend services like Cloud Run to enforce authentication, quota limits, and response field masking.'
+  },
+  {
+    id: 'pai-23-google-sheets-bigquery-federation',
+    number: 23,
+    title: 'Google Sheets Integration via BigQuery Federation & MCP',
+    subtitle: 'Bi-directional spreadsheet synchronization without writing fragile sync code',
+    track: 'spatial-workspace',
+    trackName: 'Spatial & Workspace Integrations',
+    certifications: ['Data Engineer', 'PCA'],
+    challenge: 'Users manage daily habit trackers, recipe ingredient lists, and budget matrices in Google Sheets and want PAI to query and update these sheets conversationally.',
+    solutionArchitecture: 'Configure BigQuery External Tables connecting directly to the user’s Google Drive Sheets. PAI queries the live spreadsheet using standard SQL over BigQuery federation and writes updates via Google Sheets MCP tool integrations.',
+    asciiFlow: `[User: "What was my sourdough flour ratio in my recipe spreadsheet?"]
+       │
+       ▼
+[Gemini 2.5 Flash] ──► Queries BigQuery External Table
+       │
+       ▼
+[BigQuery Federated Query Engine]
+       │  (Reads Live Google Sheet in Drive via Google Drive API)
+       ▼
+[Google Drive: \`My_Recipes.xlsx\`] ──► Returns Live Row Data
+       │
+       ▼
+[Answer Generated Instantly Without Data Movement]`,
+    gcpServices: ['BigQuery External Tables', 'Google Drive API', 'Google Sheets API', 'Cloud IAM'],
+    metrics: ['Zero ETL data synchronization', 'Live spreadsheet read/write', 'Native SQL interface on Sheets'],
+    codeSnippetTitle: 'Defining BigQuery External Table over Google Sheet',
+    codeSnippet: `CREATE EXTERNAL TABLE \`pai_dw.user_recipe_sheet\`
+OPTIONS (
+  format = 'GOOGLE_SHEETS',
+  uris = ['https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms'],
+  sheet_range = 'Sheet1!A1:E100',
+  skip_leading_rows = 1
+);
+
+-- Query live Google Sheet directly via SQL
+SELECT recipe_name, flour_grams, water_grams, hydration_pct
+FROM \`pai_dw.user_recipe_sheet\`
+WHERE recipe_name LIKE '%Sourdough%';`,
+    examTakeaway: 'Data Engineer & PCA: BigQuery External Tables allow querying data directly in Google Drive, Cloud Storage, and Bigtable without ingesting or duplicating data.'
+  },
+  {
+    id: 'pai-24-multi-region-active-active',
     number: 24,
-    title: 'Multi-Region Cloud Run Active-Active Load Balancing',
-    subtitle: 'Zero-downtime global edge routing across us-central1 and europe-west1',
-    track: 'hybrid-dr',
-    trackName: 'Hybrid, DR & Multi-Cloud',
+    title: 'Multi-Region Active-Active Cloud Run with Global Anycast IP',
+    subtitle: 'Zero-downtime edge routing across us-central1 and europe-west1',
+    track: 'spatial-workspace',
+    trackName: 'Spatial & Workspace Integrations',
     certifications: ['PCA', 'Network Specialist'],
-    challenge: 'A localized regional outage in Google Cloud \`us-central1\` could render the AI sanctuary unreachable, breaking enterprise SLAs for global corporate customers.',
-    solutionArchitecture: 'Deploy identical Cloud Run containers to \`us-central1\` and \`europe-west1\`. Create a Global External Application Load Balancer with a single Anycast IP. Serverless Network Endpoint Groups (NEGs) route users to the geographically closest region; if one region fails, traffic auto-shifts in seconds.',
+    challenge: 'A localized data center failure or fiber cut in a single GCP region must never take down PAI for global users accessing cognitive notes on the move.',
+    solutionArchitecture: 'Deploy identical Cloud Run containers across `us-central1` and `europe-west1`. Create a Global External Application Load Balancer with Serverless NEGs. Anycast BGP routes users to the closest healthy region with instant sub-second failover.',
+    asciiFlow: `[Global User Traffic]
+       │
+       ▼
+[Single Anycast Global IP (34.x.x.x)]
+       │
+       ├─► US Traffic ──► [Serverless NEG: us-central1] ──► [Cloud Run US]
+       │
+       └─► EU Traffic ──► [Serverless NEG: europe-west1] ──► [Cloud Run EU]
+             ▲ (Auto-reroutes if one region reports unhealthy)`,
     gcpServices: ['Cloud Run (Multi-Region)', 'Global External Load Balancer', 'Serverless NEGs', 'Cloud Armor'],
-    metrics: ['99.99% multi-region uptime SLA', '<50ms routing latency', 'Automatic failure rerouting'],
-    codeSnippetTitle: 'Creating Serverless NEGs for Global Load Balancing',
-    codeSnippet: `# Create Serverless NEG in US
-gcloud compute network-endpoint-groups create neg-us-central1 \\
-  --region=us-central1 --network-endpoint-type=serverless --cloud-run-service=reflectai-app
+    metrics: ['99.99% multi-region SLA', '<45ms global routing latency', 'Automatic failure rerouting'],
+    codeSnippetTitle: 'Adding Serverless NEGs to Global Load Balancer',
+    codeSnippet: `gcloud compute network-endpoint-groups create pai-neg-us \\
+  --region=us-central1 --network-endpoint-type=serverless --cloud-run-service=pai-app
 
-# Create Serverless NEG in EU
-gcloud compute network-endpoint-groups create neg-europe-west1 \\
-  --region=europe-west1 --network-endpoint-type=serverless --cloud-run-service=reflectai-app
+gcloud compute network-endpoint-groups create pai-neg-eu \\
+  --region=europe-west1 --network-endpoint-type=serverless --cloud-run-service=pai-app
 
-# Add both to Global Backend Service
-gcloud compute backend-services add-backend global-reflectai-backend \\
-  --global --network-endpoint-group=neg-us-central1 --network-endpoint-group-region=us-central1
-gcloud compute backend-services add-backend global-reflectai-backend \\
-  --global --network-endpoint-group=neg-europe-west1 --network-endpoint-group-region=europe-west1`,
-    examTakeaway: 'PCA Exam Classic: A single Global External Application Load Balancer with Serverless NEGs distributes requests across multiple Cloud Run regions over Google’s private global backbone.'
+gcloud compute backend-services add-backend pai-global-backend \\
+  --global --network-endpoint-group=pai-neg-us --network-endpoint-group-region=us-central1
+gcloud compute backend-services add-backend pai-global-backend \\
+  --global --network-endpoint-group=pai-neg-eu --network-endpoint-group-region=europe-west1`,
+    examTakeaway: 'PCA Classic: Global External Application Load Balancers use Anycast IP routing to distribute traffic across multi-region Serverless NEGs with zero client DNS reconfiguration.'
   },
   {
-    id: 'cs-25-spanner-multi-region-replication',
+    id: 'pai-25-spanner-multi-region-sync',
     number: 25,
-    title: 'Cloud Spanner Multi-Region Global Consistency',
-    subtitle: '99.999% SLA relational storage with synchronized cross-continent read-write',
-    track: 'hybrid-dr',
-    trackName: 'Hybrid, DR & Multi-Cloud',
+    title: 'Cloud Spanner Multi-Region Synchronous Replication',
+    subtitle: 'Five-nines (99.999%) SLA relational storage with synchronized global reads',
+    track: 'spatial-workspace',
+    trackName: 'Spatial & Workspace Integrations',
     certifications: ['PCA', 'Data Engineer'],
-    challenge: 'Multi-tenant enterprise organizations require strict consistency and zero data loss for billing and subscription events across North America, Europe, and Asia without database replication lags.',
-    solutionArchitecture: 'Deploy Google Cloud Spanner with a \`nam-eur-asia1\` multi-region instance configuration. TrueTime atomic clock synchronization guarantees external consistency (serializability) and five-nines (99.999%) availability with automatic zero-downtime failover.',
+    challenge: 'Enterprise user account entitlements and paid memory storage tiers must maintain strict transactional consistency across continents without replication delay.',
+    solutionArchitecture: 'Deploy Google Cloud Spanner with a `nam-eur-asia1` multi-region configuration. Google TrueTime atomic clock hardware guarantees external consistency (serializability) and five-nines (99.999%) uptime without read replicas desynchronizing.',
+    asciiFlow: `[US Client Write] ───► [Cloud Spanner Leader Region]
+                                │
+                                ├─► TrueTime Atomic Clock Sync
+                                │
+                                ├──► Synchronous Replication to EU
+                                └──► Synchronous Replication to Asia
+                                │
+                                ▼
+                       [99.999% SLA Guarantee]`,
     gcpServices: ['Cloud Spanner', 'TrueTime API', 'Cloud IAM', 'Cloud KMS'],
     metrics: ['99.999% availability SLA', '0 replication lag (external consistency)', 'Multi-continent read scaling'],
-    codeSnippetTitle: 'Provisioning a Multi-Region Cloud Spanner Instance',
-    codeSnippet: `gcloud spanner instances create serene-enterprise-spanner \\
+    codeSnippetTitle: 'Provisioning Multi-Region Cloud Spanner Instance',
+    codeSnippet: `gcloud spanner instances create pai-global-spanner \\
   --config=nam-eur-asia1 \\
-  --description="Global Enterprise Spanner" \\
+  --description="PAI Global Multi-Region Spanner" \\
   --processing-units=1000`,
-    examTakeaway: 'PCA Core Topic: Cloud Spanner is the only horizontally scalable relational database that provides TrueTime-backed external consistency with 99.999% SLA across continents.'
+    examTakeaway: 'PCA Core: Cloud Spanner is Google’s horizontally scalable relational database that uses TrueTime atomic clocks to provide external consistency with 99.999% SLA.'
   },
   {
-    id: 'cs-26-anthos-hybrid-cloud-connect',
+    id: 'pai-26-anthos-gdc-hybrid-residency',
     number: 26,
-    title: 'Google Distributed Cloud (Anthos) & Hybrid Connect',
-    subtitle: 'Running AI microservices on private bare-metal datacenters synchronized with GCP',
-    track: 'hybrid-dr',
-    trackName: 'Hybrid, DR & Multi-Cloud',
+    title: 'Google Distributed Cloud (GDC / Anthos) On-Premises Residency',
+    subtitle: 'Deploying PAI cognitive containers onto sovereign client datacenters',
+    track: 'spatial-workspace',
+    trackName: 'Spatial & Workspace Integrations',
     certifications: ['Hybrid Architect', 'PCA'],
-    challenge: 'Certain regulated defense and banking clients cannot place user journal data in public cloud regions due to strict data sovereignty mandates requiring on-premises server residency.',
-    solutionArchitecture: 'Deploy Google Distributed Cloud (GDC Virtual / Anthos) on client on-premises VMware or bare-metal clusters. The management control plane is unified via Google Cloud Connect, allowing developers to deploy the exact same container images to on-prem and Cloud Run.',
-    gcpServices: ['Google Distributed Cloud', 'Anthos Service Mesh', 'Cloud Interconnect', 'Artifact Registry'],
-    metrics: ['100% on-premises data residency', 'Single Google Cloud Console management pane'],
-    codeSnippetTitle: 'Registering On-Premises Cluster with GKE Hub',
-    codeSnippet: `gcloud container fleet memberships register-admin-cluster on-prem-cluster-01 \\
+    challenge: 'Certain regulated enterprise clients prohibit cognitive employee thoughts from egressing to public cloud regions due to strict data sovereignty compliance.',
+    solutionArchitecture: 'Deploy Google Distributed Cloud (GDC Virtual / Anthos) on client on-premises VMware or bare-metal clusters. The management control plane is unified via Google Cloud Fleet Management, allowing identical container images to run on-prem.',
+    asciiFlow: `[Google Cloud Console (Central Control Plane)]
+       │
+       ▼ (Fleet Management & Config Sync)
+┌─────────────────────────────────────────────────────────────┐
+│  CLIENT PRIVATE ON-PREMISES DATACENTER                      │
+│                                                             │
+│    [Google Distributed Cloud (Bare Metal / VMware)]         │
+│         ├─► PAI Inference Container                         │
+│         └─► Local Sovereign Storage Vault                   │
+└─────────────────────────────────────────────────────────────┘`,
+    gcpServices: ['Google Distributed Cloud', 'Anthos Service Mesh', 'Cloud Interconnect', 'Fleet Management'],
+    metrics: ['100% on-premises data residency', 'Single Google Cloud management pane', 'Zero public egress'],
+    codeSnippetTitle: 'Registering On-Premises Cluster with GKE Fleet',
+    codeSnippet: `gcloud container fleet memberships register-admin-cluster on-prem-datacenter-01 \\
   --kubeconfig=/etc/kubernetes/admin.conf \\
   --service-account-key-file=/etc/gcp/hub-service-account.json`,
-    examTakeaway: 'Hybrid Architect & PCA: GDC (Anthos) delivers container consistency across on-premises, AWS, Azure, and Google Cloud, managed centrally via Fleet Management and Config Sync.'
+    examTakeaway: 'Hybrid Architect: GDC (Anthos) delivers container runtime consistency across on-premises, AWS, and Google Cloud, managed centrally via Fleet Management.'
   },
   {
-    id: 'cs-27-disaster-recovery-rto-rpo',
+    id: 'pai-27-disaster-recovery-turbo-replication',
     number: 27,
-    title: 'Disaster Recovery (DR): Warm Standby vs Pilot Light',
-    subtitle: 'Achieving RTO < 5 minutes and RPO = 0 across geographical disasters',
-    track: 'hybrid-dr',
-    trackName: 'Hybrid, DR & Multi-Cloud',
+    title: 'Disaster Recovery (DR): Warm Standby & Turbo Replication',
+    subtitle: 'Achieving RTO < 3 minutes and RPO = 0 across geographic disasters',
+    track: 'spatial-workspace',
+    trackName: 'Spatial & Workspace Integrations',
     certifications: ['PCA', 'CSAE'],
-    challenge: 'In the event of a catastrophic regional failure, an enterprise cannot afford to lose a single submitted reflection entry (RPO=0) and must resume service in under 5 minutes (RTO < 5 min).',
-    solutionArchitecture: 'Implement a "Warm Standby" architecture. Cloud Storage buckets are configured as Dual-Region (\`nam4\`: \`us-central1\` and \`us-east1\`) with Turbo Replication for 15-minute SLA. Cloud Run is pre-deployed to \`us-east1\` with \`--min-instances=0\` (Warm Standby costs zero compute dollars while idle).',
+    challenge: 'In the event of a total regional blackout, an enterprise cannot afford to lose a single journal thought (RPO=0) and must resume service within minutes (RTO < 3 min).',
+    solutionArchitecture: 'Configure Dual-Region Cloud Storage buckets (`nam4`: `us-central1` and `us-east1`) with Turbo Replication guaranteeing 15-minute cross-region object replication. Cloud Run is pre-deployed in `us-east1` with `--min-instances=0` (Warm Standby incurs $0 compute cost while idle).',
+    asciiFlow: `[Primary Region: us-central1]
+       │
+       ▼ (Dual-Region Turbo Replication)
+[Secondary Region: us-east1 (Warm Standby)]
+       │
+       ▼ Regional Outage Detected
+[DNS Failover Shifts Traffic to us-east1 in <3 minutes]
+       │
+       ▼ (Zero Data Lost: RPO = 0)`,
     gcpServices: ['Cloud Storage Dual-Region', 'Cloud DNS', 'Cloud Run', 'Cloud Monitoring'],
     metrics: ['RPO = 0 (zero data loss)', 'RTO < 3 minutes', '$0 compute standby overhead'],
-    codeSnippetTitle: 'Configuring Turbo Replication on Dual-Region Buckets',
-    codeSnippet: `gcloud storage buckets create gs://serene-ai-dual-vault \\
+    codeSnippetTitle: 'Configuring Turbo Replication on Dual-Region Bucket',
+    codeSnippet: `gcloud storage buckets create gs://pai-dual-vault \\
   --location=nam4 \\
   --uniform-bucket-level-access
 
-gcloud storage buckets update gs://serene-ai-dual-vault \\
+gcloud storage buckets update gs://pai-dual-vault \\
   --turbo-replication`,
-    examTakeaway: 'PCA Exam Classic: Dual-Region storage with Turbo Replication guarantees 100% replication of new objects within 15 minutes, fulfilling RPO goals without running expensive redundant database clusters.'
+    examTakeaway: 'PCA Classic: Dual-Region storage with Turbo Replication guarantees replication within 15 minutes, fulfilling RTO/RPO requirements without running expensive active redundant databases.'
   },
   {
-    id: 'cs-28-finops-committed-use-discounts',
+    id: 'pai-28-finops-cuds-automated-budget-caps',
     number: 28,
-    title: 'FinOps: Committed Use Discounts (CUDs) & Automated Shutdowns',
+    title: 'FinOps: Committed Use Discounts (CUDs) & Automated Budget Caps',
     subtitle: 'Optimizing cloud unit economics with 1-year commitments and Pub/Sub billing hooks',
-    track: 'hybrid-dr',
-    trackName: 'Hybrid, DR & Multi-Cloud',
+    track: 'spatial-workspace',
+    trackName: 'Spatial & Workspace Integrations',
     certifications: ['PCA', 'CSAE'],
-    challenge: 'Startups and enterprise teams face budget overruns when unmonitored test workloads run unchecked over the weekend, leading to surprise monthly billing invoices.',
-    solutionArchitecture: 'Apply 1-Year or 3-Year Flexible Committed Use Discounts (CUDs) covering baseline Cloud Run and database compute for a 52% cost reduction. Configure Cloud Billing budget threshold notifications to trigger a Pub/Sub topic which executes a Cloud Run function to dial down non-production instances to zero.',
-    gcpServices: ['Cloud Billing', 'Committed Use Discounts', 'Pub/Sub', 'Cloud Run Functions'],
-    metrics: ['52% discount on committed spend', '100% cap on unexpected budget overruns'],
-    codeSnippetTitle: 'Automated Billing Threshold Cap Function',
+    challenge: 'Unmonitored development experiments or viral inference traffic spikes can exceed startup budgets, generating surprise monthly cloud invoices.',
+    solutionArchitecture: 'Purchase 1-Year Flexible Committed Use Discounts (CUDs) for baseline Cloud Run and BigQuery compute, securing a 52% discount. Connect Cloud Billing budget alert webhooks to a Pub/Sub topic which triggers a Cloud Run function to automatically throttle non-production instances to zero upon budget breach.',
+    asciiFlow: `[Cloud Billing Budget Engine]
+       │
+       ▼ (Cost Reaches 100% of Monthly Cap)
+[Pub/Sub Topic: \`billing-alert-cap\`]
+       │
+       ▼
+[Cloud Run Automated Function]
+       │
+       ▼ Throttles Staging / Non-Critical Services to max-instances=0
+[Budget Breach Prevented Automatically]`,
+    gcpServices: ['Cloud Billing', 'Committed Use Discounts (CUDs)', 'Pub/Sub', 'Cloud Run Functions'],
+    metrics: ['52% discount on committed spend', '100% hard cap on billing overruns', 'Automated governance'],
+    codeSnippetTitle: 'Automated Billing Cap Shutdown Handler',
     codeSnippet: `exports.stopBillingSpikes = async (pubsubEvent) => {
   const data = JSON.parse(Buffer.from(pubsubEvent.data, 'base64').toString());
   if (data.costAmount >= data.budgetAmount) {
-    console.warn("BUDGET EXCEEDED! Disabling non-prod services...");
-    // Scale non-critical Cloud Run services to max-instances=0
+    console.warn("BUDGET EXCEEDED! Throttling non-prod workloads to zero...");
     await runClient.updateService({
-      name: 'projects/serene-dev/locations/us-central1/services/staging-app',
+      name: 'projects/pai-dev/locations/us-central1/services/staging-app',
       maxInstances: 0
     });
   }
 };`,
-    examTakeaway: 'For PCA & CSAE: CUDs offer up to 57% savings on predictable workloads. Budget alerts alone do not stop billing; you must wire Pub/Sub to an automated Cloud Function to disable services or disable billing programmatically.'
+    examTakeaway: 'PCA & CSAE: Budget alerts do not stop billing automatically; enterprise architects must connect budget alerts to Pub/Sub and automated Cloud Functions to programmatically cap spending.'
   }
 ];

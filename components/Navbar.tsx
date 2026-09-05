@@ -29,16 +29,16 @@ export function Navbar({ user, activeTab = 'sanctuary', onNavigate, onOpenMaps, 
             onClick={() => onNavigate?.(user ? 'sanctuary' : 'landing')}
             className="flex items-center gap-3 text-left group cursor-pointer"
           >
-            <div className="w-9 h-9 rounded-md bg-[#6B8E9B] flex items-center justify-center text-white font-serif italic text-lg shadow-xs group-hover:opacity-90 transition-opacity">
-              S
+            <div className="w-9 h-9 rounded-md bg-[#2C3539] flex items-center justify-center text-[#FFFFB3] font-serif font-bold text-lg shadow-xs group-hover:bg-[#6B8E9B] transition-colors">
+              P
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-serif text-[#2C3539] tracking-[-0.02em] text-lg font-normal">
-                  Serene
+                <span className="font-serif text-[#2C3539] tracking-[-0.02em] text-lg font-bold">
+                  PAI
                 </span>
-                <span className="text-[10px] uppercase tracking-[0.05em] px-2 py-0.5 rounded bg-[#FFFFFF] text-[#6B8E9B] border border-[#D1D8DB] font-sans font-medium">
-                  AI Sanctuary
+                <span className="text-[10px] uppercase tracking-[0.08em] px-2 py-0.5 rounded bg-[#FFFFFF] text-[#6B8E9B] border border-[#D1D8DB] font-sans font-medium">
+                  Cognitive OS
                 </span>
               </div>
             </div>
@@ -55,7 +55,7 @@ export function Navbar({ user, activeTab = 'sanctuary', onNavigate, onOpenMaps, 
                   : 'text-[#6B8E9B] hover:text-[#2C3539]'
               }`}
             >
-              Sanctuary
+              Memory Hub
             </button>
 
             <button
@@ -103,7 +103,7 @@ export function Navbar({ user, activeTab = 'sanctuary', onNavigate, onOpenMaps, 
                   : 'text-[#6B8E9B] hover:text-[#2C3539]'
               }`}
             >
-              <span>Case Studies</span>
+              <span>Architecture</span>
               <span className="w-4 h-4 rounded-full bg-[#8DA399]/20 text-[#2C3539] text-[10px] font-bold flex items-center justify-center">
                 28
               </span>

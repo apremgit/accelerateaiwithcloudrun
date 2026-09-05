@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { CASE_STUDIES, CaseStudy, CertificationType } from '@/data/caseStudies';
+import { CASE_STUDIES, CaseStudy, CertificationType, TrackType } from '@/data/caseStudies';
 import { 
   ArrowLeft, 
   Search, 
@@ -16,15 +16,15 @@ import {
   ChevronRight, 
   ChevronLeft,
   X,
-  ExternalLink,
-  Award
+  Award,
+  GitBranch
 } from 'lucide-react';
 
 interface CaseStudiesExplorerProps {
   onBack: () => void;
 }
 
-type TrackFilter = 'all' | 'cloud-run' | 'agentic-ai' | 'security' | 'data-rag' | 'hybrid-dr';
+type TrackFilter = 'all' | TrackType;
 type CertFilter = 'all' | CertificationType;
 
 export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
@@ -74,12 +74,11 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
   };
 
   const trackTabs = [
-    { id: 'all', label: 'All (28)', count: 28, icon: Layers },
-    { id: 'cloud-run', label: 'Cloud Run & GenAI', count: 6, icon: Cpu },
-    { id: 'agentic-ai', label: 'Agentic AI & RAG', count: 6, icon: Sparkles },
-    { id: 'security', label: 'Zero-Trust Security', count: 6, icon: ShieldCheck },
-    { id: 'data-rag', label: 'Data & Vectors', count: 5, icon: Database },
-    { id: 'hybrid-dr', label: 'Hybrid & DR', count: 5, icon: Globe },
+    { id: 'all', label: 'All Blueprints (28)', count: 28, icon: Layers },
+    { id: 'identity-secrets', label: 'Identity & Sovereignty (7)', count: 7, icon: ShieldCheck },
+    { id: 'reasoning-engine', label: 'Reasoning Engine & Flow (7)', count: 7, icon: Sparkles },
+    { id: 'vector-rag', label: 'Vector RAG & BigQuery (7)', count: 7, icon: Database },
+    { id: 'spatial-workspace', label: 'Spatial & Integrations (7)', count: 7, icon: Globe },
   ];
 
   return (
@@ -92,27 +91,27 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
             className="flex items-center gap-2 text-xs uppercase tracking-[0.08em] text-[#6B8E9B] hover:text-[#2C3539] transition-colors cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 transform group-hover:-translate-x-1 transition-transform" />
-            <span>Return</span>
+            <span>Return to Memory Hub</span>
           </button>
 
-          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFFFFF] border border-[#D1D8DB] text-[11px] font-sans tracking-wide text-[#6B8E9B]">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-[#FFFFFF] border border-[#D1D8DB] text-[11px] font-sans tracking-wide text-[#6B8E9B] shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-[#8DA399] animate-pulse" />
-            <span className="font-medium text-[#2C3539]">28 Production Blueprints</span>
+            <span className="font-semibold text-[#2C3539]">PAI Cognitive Architecture</span>
             <span>&bull;</span>
-            <span>PCA & ACE Curriculum</span>
+            <span>28 Blueprints</span>
           </div>
         </div>
 
         {/* Title Area */}
         <div className="space-y-3 max-w-3xl">
-          <span className="text-xs font-sans uppercase tracking-[0.15em] text-[#6B8E9B] font-semibold">
-            Enterprise Architecture Archives
-          </span>
+          <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded bg-[#8DA399]/15 text-[#2C3539] text-[10px] font-sans uppercase font-bold tracking-widest">
+            <span>PAI Engine &bull; System Specifications</span>
+          </div>
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl text-[#2C3539] tracking-tight">
-            The 28 Case Studies.
+            PAI Architecture Engine.
           </h1>
           <p className="text-base sm:text-lg text-[#6B8E9B] font-serif italic leading-relaxed">
-            Real-world Google Cloud engineering patterns, container optimizations, and enterprise AI orchestration designed for the Cloud Run AI Challenge and certified Solutions Architects.
+            28 production blueprints power our zero-loss cognitive layer — from Firebase tenant boundaries and Gemini multi-turn reasoning to BigQuery Vector RAG and Google Maps spatial grounding.
           </p>
         </div>
 
@@ -126,7 +125,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by product, CLI command, or pattern (e.g. vLLM, AlloyDB, VPC-SC)..."
+                placeholder="Search across 28 blueprints (e.g. BigQuery Vector, MCP, Secret Manager, Cloud Tasks)..."
                 className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#D1D8DB] text-xs focus:outline-hidden focus:border-[#6B8E9B] placeholder-[#6B8E9B]/60 shadow-2xs"
               />
               {searchQuery && (
@@ -160,7 +159,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
             </div>
           </div>
 
-          {/* Track Tabs */}
+          {/* Track Category Navigation Tabs */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 border-b border-[#D1D8DB]/60">
             {trackTabs.map((tab) => {
               const Icon = tab.icon;
@@ -169,13 +168,13 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                 <button
                   key={tab.id}
                   onClick={() => setSelectedTrack(tab.id as TrackFilter)}
-                  className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-sans transition-all cursor-pointer whitespace-nowrap ${
+                  className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-sans transition-all cursor-pointer whitespace-nowrap ${
                     isActive
-                      ? 'bg-[#FFFFFF] text-[#2C3539] font-medium border border-[#D1D8DB] shadow-2xs'
-                      : 'text-[#6B8E9B] hover:text-[#2C3539]'
+                      ? 'bg-[#2C3539] text-[#FFFFFF] font-medium shadow-2xs'
+                      : 'bg-[#FFFFFF] text-[#6B8E9B] border border-[#D1D8DB] hover:text-[#2C3539]'
                   }`}
                 >
-                  <Icon className="w-3.5 h-3.5 text-[#6B8E9B]" />
+                  <Icon className="w-3.5 h-3.5" />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -193,8 +192,8 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
 
         {filteredStudies.length === 0 ? (
           <div className="py-16 text-center bg-[#FFFFFF] rounded-2xl border border-[#D1D8DB] p-8">
-            <p className="font-serif text-[#2C3539] text-lg mb-2">No matching case studies found</p>
-            <p className="text-xs text-[#6B8E9B] mb-4">Try adjusting your keyword or reset track filters.</p>
+            <p className="font-serif text-[#2C3539] text-lg mb-2">No matching blueprints found</p>
+            <p className="text-xs text-[#6B8E9B] mb-4">Try adjusting your search terms or reset track filters.</p>
             <button
               onClick={() => {
                 setSelectedTrack('all');
@@ -218,7 +217,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                   {/* Top Metadata */}
                   <div className="flex items-center justify-between gap-2 mb-3">
                     <span className="text-[11px] font-mono text-[#6B8E9B] font-semibold tracking-wider">
-                      CASE STUDY #{String(study.number).padStart(2, '0')}
+                      BLUEPRINT #{String(study.number).padStart(2, '0')} &bull; {study.trackName.toUpperCase()}
                     </span>
                     <div className="flex items-center gap-1.5 flex-wrap justify-end">
                       {study.certifications.map((cert) => (
@@ -241,9 +240,9 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                   </p>
 
                   {/* Key Challenge Preview */}
-                  <div className="p-3 rounded-lg bg-[#F9F8F6] border border-[#D1D8DB]/50 mb-4 text-xs text-[#2C3539] leading-relaxed">
+                  <div className="p-3 rounded-xl bg-[#F9F8F6] border border-[#D1D8DB]/60 mb-4 text-xs text-[#2C3539] leading-relaxed">
                     <span className="font-semibold text-[#6B8E9B] block text-[10px] uppercase tracking-wider mb-1">
-                      Challenge:
+                      System Challenge:
                     </span>
                     <p className="line-clamp-2">{study.challenge}</p>
                   </div>
@@ -273,7 +272,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                       {study.metrics[0]}
                     </span>
                     <span className="flex items-center gap-1 text-[#2C3539] font-medium group-hover:text-[#6B8E9B] transition-colors">
-                      <span>View Blueprint</span>
+                      <span>View Architecture</span>
                       <ChevronRight className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform" />
                     </span>
                   </div>
@@ -295,9 +294,9 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
             <div className="flex items-center justify-between pb-4 border-b border-[#D1D8DB]/60 mb-6">
               <div className="flex items-center gap-3">
                 <span className="text-xs font-mono font-bold text-[#6B8E9B] bg-[#F9F8F6] px-2.5 py-1 rounded-md border border-[#D1D8DB]">
-                  #{String(activeCaseStudy.number).padStart(2, '0')} OF 28
+                  BLUEPRINT #{String(activeCaseStudy.number).padStart(2, '0')} OF 28
                 </span>
-                <span className="text-xs font-sans text-[#6B8E9B] uppercase tracking-wider">
+                <span className="text-xs font-sans text-[#6B8E9B] uppercase tracking-wider font-semibold">
                   {activeCaseStudy.trackName}
                 </span>
               </div>
@@ -349,7 +348,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                 </p>
               </div>
 
-              {/* Metrics Row */}
+              {/* Metrics Benchmarks */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {activeCaseStudy.metrics.map((metric, i) => (
                   <div
@@ -366,7 +365,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="p-4 rounded-xl bg-[#FDFBF7] border border-[#E8E2D9]">
                   <span className="text-[11px] font-sans font-bold uppercase tracking-wider text-[#A37B45] block mb-2">
-                    Enterprise Challenge
+                    System Challenge
                   </span>
                   <p className="text-xs text-[#2C3539] leading-relaxed">
                     {activeCaseStudy.challenge}
@@ -381,6 +380,19 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                     {activeCaseStudy.solutionArchitecture}
                   </p>
                 </div>
+              </div>
+
+              {/* ASCII Dataflow Architecture Diagram */}
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <GitBranch className="w-4 h-4 text-[#6B8E9B]" />
+                  <span className="text-[11px] font-sans uppercase tracking-wider text-[#6B8E9B] font-semibold">
+                    Architecture Dataflow Diagram
+                  </span>
+                </div>
+                <pre className="p-4 rounded-xl bg-[#2C3539] text-[#FFFFB3] text-xs font-mono overflow-x-auto leading-relaxed border border-[#D1D8DB]/30 shadow-inner">
+                  <code>{activeCaseStudy.asciiFlow}</code>
+                </pre>
               </div>
 
               {/* Products Chain */}
@@ -418,7 +430,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                     ) : (
                       <>
                         <Copy className="w-3.5 h-3.5" />
-                        <span>Copy Code</span>
+                        <span>Copy Snippet</span>
                       </>
                     )}
                   </button>
@@ -433,7 +445,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                 <Award className="w-5 h-5 text-[#6B8E9B] shrink-0 mt-0.5" />
                 <div className="space-y-1">
                   <span className="text-xs font-sans font-bold uppercase tracking-wider text-[#2C3539] block">
-                    Certification Takeaway (PCA / ACE)
+                    Certification & Solutions Architect Takeaway
                   </span>
                   <p className="text-xs text-[#2C3539] leading-relaxed">
                     {activeCaseStudy.examTakeaway}
@@ -449,7 +461,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
                 onClick={() => setActiveCaseStudy(null)}
                 className="px-4 py-2 rounded-lg bg-[#2C3539] text-white text-xs font-medium hover:bg-[#6B8E9B] transition-colors cursor-pointer"
               >
-                Done
+                Close Blueprint
               </button>
             </div>
           </div>
