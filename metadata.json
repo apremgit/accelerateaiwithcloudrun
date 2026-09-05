@@ -1,0 +1,7 @@
+{
+  "name": "ReflectAI - Journal & Reflection Workspace",
+  "description": "User-authenticated multi-turn journaling and reflection dashboard with private Firestore persistence, Gemini AI analysis, and real-time Google Maps Places, Routes, and Directions agent.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+

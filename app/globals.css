@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+:root {
+  --color-primary: #6B8E9B;
+  --color-background: #F9F8F6;
+  --color-surface: #FFFFFF;
+  --color-text: #2C3539;
+  --color-muted: #D1D8DB;
+  --color-accent: #8DA399;
+  --font-headings: var(--font-lora), 'Lora', Georgia, serif;
+  --font-body: var(--font-albert-sans), 'Albert Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 16px;
+  --spacing-base: 8px;
+  --spacing-lg: 48px;
+  --spacing-xl: 96px;
+}
+
+body {
+  background-color: #F9F8F6;
+  color: #2C3539;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-serif {
+  font-family: var(--font-headings);
+}
+
+.font-sans {
+  font-family: var(--font-body);
+}
+
+/* Custom scrollbars matching tranquil palette */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #D1D8DB;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6B8E9B;
+}
