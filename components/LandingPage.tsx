@@ -10,6 +10,7 @@ interface LandingPageProps {
   onNavigateToPrivacy?: () => void;
   onNavigateToPreferences?: () => void;
   onNavigateToStack?: () => void;
+  onNavigateToCaseStudies?: () => void;
 }
 
 export function LandingPage({
@@ -18,6 +19,7 @@ export function LandingPage({
   onNavigateToPrivacy,
   onNavigateToPreferences,
   onNavigateToStack,
+  onNavigateToCaseStudies,
 }: LandingPageProps) {
   const [initialThought, setInitialThought] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -190,6 +192,18 @@ export function LandingPage({
                 className="hover:text-[#2C3539] transition-colors cursor-pointer"
               >
                 Google Stack
+              </button>
+            </>
+          )}
+          {onNavigateToCaseStudies && (
+            <>
+              <span className="text-[#D1D8DB]">&bull;</span>
+              <button
+                id="link-footer-case-studies"
+                onClick={onNavigateToCaseStudies}
+                className="hover:text-[#2C3539] transition-colors cursor-pointer"
+              >
+                Case Studies (28)
               </button>
             </>
           )}

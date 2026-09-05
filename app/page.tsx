@@ -9,12 +9,14 @@ import { Dashboard } from '@/components/Dashboard';
 import { TrustAndPrivacy } from '@/components/TrustAndPrivacy';
 import { Preferences, UserPreferencesData } from '@/components/Preferences';
 import { GoogleStack } from '@/components/GoogleStack';
+import { CaseStudiesExplorer } from '@/components/CaseStudiesExplorer';
+import { CloudLuminary } from '@/components/CloudLuminary';
 import { MapsExplorerModal } from '@/components/MapsExplorerModal';
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack'>('landing');
+  const [activeTab, setActiveTab] = useState<'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack' | 'case-studies'>('landing');
   const [initialThought, setInitialThought] = useState('');
   const [mapsModalOpen, setMapsModalOpen] = useState(false);
 
@@ -35,7 +37,7 @@ export default function Home() {
     setActiveTab('sanctuary');
   };
 
-  const handleNavigate = (tab: 'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack') => {
+  const handleNavigate = (tab: 'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack' | 'case-studies') => {
     setActiveTab(tab);
   };
 
@@ -58,7 +60,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F9F8F6] text-[#2C3539] font-sans">
+    <div className="min-h-screen flex flex-col bg-[#F9F8F6] text-[#2C3539] font-sans relative">
       <Navbar
         user={user}
         activeTab={activeTab}
@@ -78,6 +80,7 @@ export default function Home() {
             onNavigateToPrivacy={() => setActiveTab('privacy')}
             onNavigateToPreferences={() => setActiveTab('preferences')}
             onNavigateToStack={() => setActiveTab('stack')}
+            onNavigateToCaseStudies={() => setActiveTab('case-studies')}
           />
         )}
 
@@ -100,9 +103,22 @@ export default function Home() {
         )}
 
         {activeTab === 'stack' && (
-          <GoogleStack onBack={handleBack} />
+          <GoogleStack 
+            onBack={handleBack} 
+            onNavigateToCaseStudies={() => setActiveTab('case-studies')}
+          />
+        )}
+
+        {activeTab === 'case-studies' && (
+          <CaseStudiesExplorer onBack={handleBack} />
         )}
       </main>
+
+      {/* The Cloud Luminary: Ambient Architecture Pollinator */}
+      <CloudLuminary
+        activeTab={activeTab}
+        onActivate={() => setActiveTab('case-studies')}
+      />
 
       {/* Global Google Maps Agent Launcher */}
       <MapsExplorerModal

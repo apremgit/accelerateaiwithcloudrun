@@ -8,8 +8,8 @@ import Image from 'next/image';
 
 interface NavbarProps {
   user: User | null;
-  activeTab?: 'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack';
-  onNavigate?: (tab: 'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack') => void;
+  activeTab?: 'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack' | 'case-studies';
+  onNavigate?: (tab: 'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack' | 'case-studies') => void;
   onOpenMaps?: () => void;
   onSignOut?: () => void;
 }
@@ -92,6 +92,21 @@ export function Navbar({ user, activeTab = 'sanctuary', onNavigate, onOpenMaps, 
               }`}
             >
               Google Stack
+            </button>
+
+            <button
+              id="nav-tab-case-studies"
+              onClick={() => onNavigate?.('case-studies')}
+              className={`px-3 py-1.5 rounded text-xs font-sans uppercase tracking-[0.05em] transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeTab === 'case-studies'
+                  ? 'text-[#2C3539] font-medium bg-[#FFFFFF] border border-[#D1D8DB]'
+                  : 'text-[#6B8E9B] hover:text-[#2C3539]'
+              }`}
+            >
+              <span>Case Studies</span>
+              <span className="w-4 h-4 rounded-full bg-[#8DA399]/20 text-[#2C3539] text-[10px] font-bold flex items-center justify-center">
+                28
+              </span>
             </button>
           </nav>
         </div>

@@ -16,6 +16,7 @@ import {
 
 interface GoogleStackProps {
   onBack: () => void;
+  onNavigateToCaseStudies?: () => void;
 }
 
 interface GoogleService {
@@ -29,7 +30,7 @@ interface GoogleService {
   specs: string[];
 }
 
-export function GoogleStack({ onBack }: GoogleStackProps) {
+export function GoogleStack({ onBack, onNavigateToCaseStudies }: GoogleStackProps) {
   const googleServices: GoogleService[] = [
     {
       id: 'cloud-run',
@@ -290,6 +291,29 @@ export function GoogleStack({ onBack }: GoogleStackProps) {
             gcloud run services update reflectai-app --update-labels=dev-tutorial=cloud-run-ai-challenge
           </div>
         </div>
+
+        {/* Enterprise Case Studies Gateway */}
+        {onNavigateToCaseStudies && (
+          <div className="p-6 bg-gradient-to-r from-[#FFFFFF] to-[#F9F8F6] border border-[#D1D8DB] rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
+            <div className="space-y-1 max-w-xl">
+              <span className="text-[10px] font-sans uppercase tracking-[0.08em] font-semibold text-[#8DA399] block">
+                Architecture Knowledge Base
+              </span>
+              <h4 className="font-serif text-base sm:text-lg text-[#2C3539]">
+                Want to see how these services solve real-world enterprise challenges?
+              </h4>
+              <p className="text-xs text-[#6B8E9B] font-sans leading-relaxed">
+                Explore 28 production case studies covering vLLM GPUs on Cloud Run, VPC-SC, AlloyDB vector search, and PCA/ACE exam patterns.
+              </p>
+            </div>
+            <button
+              onClick={onNavigateToCaseStudies}
+              className="px-4 py-2.5 rounded-lg bg-[#2C3539] text-[#FFFFFF] text-xs font-medium hover:bg-[#6B8E9B] transition-colors cursor-pointer shrink-0"
+            >
+              Explore 28 Case Studies &rarr;
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Footer Note */}
