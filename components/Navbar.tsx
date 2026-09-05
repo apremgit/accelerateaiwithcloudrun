@@ -8,8 +8,8 @@ import Image from 'next/image';
 
 interface NavbarProps {
   user: User | null;
-  activeTab?: 'landing' | 'sanctuary' | 'privacy' | 'preferences';
-  onNavigate?: (tab: 'landing' | 'sanctuary' | 'privacy' | 'preferences') => void;
+  activeTab?: 'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack';
+  onNavigate?: (tab: 'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack') => void;
   onOpenMaps?: () => void;
   onSignOut?: () => void;
 }
@@ -80,6 +80,18 @@ export function Navbar({ user, activeTab = 'sanctuary', onNavigate, onOpenMaps, 
               }`}
             >
               Preferences
+            </button>
+
+            <button
+              id="nav-tab-stack"
+              onClick={() => onNavigate?.('stack')}
+              className={`px-3 py-1.5 rounded text-xs font-sans uppercase tracking-[0.05em] transition-all cursor-pointer ${
+                activeTab === 'stack'
+                  ? 'text-[#2C3539] font-medium bg-[#FFFFFF] border border-[#D1D8DB]'
+                  : 'text-[#6B8E9B] hover:text-[#2C3539]'
+              }`}
+            >
+              Google Stack
             </button>
           </nav>
         </div>

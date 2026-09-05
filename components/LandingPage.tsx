@@ -9,6 +9,7 @@ interface LandingPageProps {
   onBeginReflection?: (initialThought: string) => void;
   onNavigateToPrivacy?: () => void;
   onNavigateToPreferences?: () => void;
+  onNavigateToStack?: () => void;
 }
 
 export function LandingPage({
@@ -16,6 +17,7 @@ export function LandingPage({
   onBeginReflection,
   onNavigateToPrivacy,
   onNavigateToPreferences,
+  onNavigateToStack,
 }: LandingPageProps) {
   const [initialThought, setInitialThought] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -179,6 +181,18 @@ export function LandingPage({
           >
             Preferences
           </button>
+          {onNavigateToStack && (
+            <>
+              <span className="text-[#D1D8DB]">&bull;</span>
+              <button
+                id="link-footer-stack"
+                onClick={onNavigateToStack}
+                className="hover:text-[#2C3539] transition-colors cursor-pointer"
+              >
+                Google Stack
+              </button>
+            </>
+          )}
         </div>
       </footer>
     </div>

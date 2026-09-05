@@ -8,12 +8,13 @@ import { LandingPage } from '@/components/LandingPage';
 import { Dashboard } from '@/components/Dashboard';
 import { TrustAndPrivacy } from '@/components/TrustAndPrivacy';
 import { Preferences, UserPreferencesData } from '@/components/Preferences';
+import { GoogleStack } from '@/components/GoogleStack';
 import { MapsExplorerModal } from '@/components/MapsExplorerModal';
 
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'landing' | 'sanctuary' | 'privacy' | 'preferences'>('landing');
+  const [activeTab, setActiveTab] = useState<'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack'>('landing');
   const [initialThought, setInitialThought] = useState('');
   const [mapsModalOpen, setMapsModalOpen] = useState(false);
 
@@ -34,7 +35,7 @@ export default function Home() {
     setActiveTab('sanctuary');
   };
 
-  const handleNavigate = (tab: 'landing' | 'sanctuary' | 'privacy' | 'preferences') => {
+  const handleNavigate = (tab: 'landing' | 'sanctuary' | 'privacy' | 'preferences' | 'stack') => {
     setActiveTab(tab);
   };
 
@@ -76,6 +77,7 @@ export default function Home() {
             onBeginReflection={handleBeginReflection}
             onNavigateToPrivacy={() => setActiveTab('privacy')}
             onNavigateToPreferences={() => setActiveTab('preferences')}
+            onNavigateToStack={() => setActiveTab('stack')}
           />
         )}
 
@@ -95,6 +97,10 @@ export default function Home() {
 
         {activeTab === 'preferences' && (
           <Preferences onBack={handleBack} />
+        )}
+
+        {activeTab === 'stack' && (
+          <GoogleStack onBack={handleBack} />
         )}
       </main>
 
