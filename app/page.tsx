@@ -10,7 +10,8 @@ import { TrustAndPrivacy } from '@/components/TrustAndPrivacy';
 import { Preferences, UserPreferencesData } from '@/components/Preferences';
 import { GoogleStack } from '@/components/GoogleStack';
 import { CaseStudiesExplorer } from '@/components/CaseStudiesExplorer';
-import { CloudLuminary } from '@/components/CloudLuminary';
+import { InteractivePollinator } from '@/components/InteractivePollinator';
+import { CustomCursor } from '@/components/CustomCursor';
 import { MapsExplorerModal } from '@/components/MapsExplorerModal';
 
 export default function Home() {
@@ -61,6 +62,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F9F8F6] text-[#2C3539] font-sans relative">
+      {/* Precision Magnetic Trailing Cursor */}
+      <CustomCursor />
+
       <Navbar
         user={user}
         activeTab={activeTab}
@@ -114,8 +118,8 @@ export default function Home() {
         )}
       </main>
 
-      {/* The Cloud Luminary: Ambient Architecture Pollinator */}
-      <CloudLuminary
+      {/* The Interactive Cloud Pollinator: Ambient Bee & Micro-Interaction */}
+      <InteractivePollinator
         activeTab={activeTab}
         onActivate={() => setActiveTab('case-studies')}
       />

@@ -20,6 +20,8 @@ import {
   GitBranch
 } from 'lucide-react';
 
+import { FlagshipGoldSlider } from './FlagshipGoldSlider';
+
 interface CaseStudiesExplorerProps {
   onBack: () => void;
 }
@@ -115,8 +117,18 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
           </p>
         </div>
 
+        {/* Flagship Hero Showcase: Core 4 Hackathon Services */}
+        <div className="mt-10">
+          <FlagshipGoldSlider
+            onSelectService={(serviceCaseStudyId) => {
+              const study = CASE_STUDIES.find((s) => s.id === serviceCaseStudyId);
+              if (study) setActiveCaseStudy(study);
+            }}
+          />
+        </div>
+
         {/* Search and Filters Bar */}
-        <div className="mt-10 space-y-4">
+        <div className="mt-6 space-y-4">
           <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
             {/* Search Input */}
             <div className="relative flex-1 max-w-md">
@@ -211,6 +223,7 @@ export function CaseStudiesExplorer({ onBack }: CaseStudiesExplorerProps) {
               <div
                 key={study.id}
                 onClick={() => setActiveCaseStudy(study)}
+                data-cursor="BLUEPRINT"
                 className="bg-[#FFFFFF] border border-[#D1D8DB] hover:border-[#6B8E9B] rounded-2xl p-6 transition-all duration-200 shadow-2xs hover:shadow-md cursor-pointer flex flex-col justify-between group"
               >
                 <div>
