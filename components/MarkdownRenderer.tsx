@@ -10,7 +10,7 @@ interface MarkdownRendererProps {
 
 export function MarkdownRenderer({ content, className = '' }: MarkdownRendererProps) {
   return (
-    <div className={`font-serif text-[18px] text-[#2C3539] leading-[1.8] space-y-4 font-normal ${className}`}>
+    <div className={`font-sans text-[16px] sm:text-[17px] text-[#f4f4f4] leading-[1.8] space-y-4 font-normal prose prose-invert max-w-none ${className}`}>
       <Markdown>{content}</Markdown>
     </div>
   );

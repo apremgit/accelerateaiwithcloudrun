@@ -37,9 +37,6 @@ export function Navbar({ user, activeTab = 'sanctuary', onNavigate, onOpenMaps, 
                 <span className="font-serif text-[#2C3539] tracking-[-0.02em] text-lg font-bold">
                   PAI
                 </span>
-                <span className="text-[10px] uppercase tracking-[0.08em] px-2 py-0.5 rounded bg-[#FFFFFF] text-[#6B8E9B] border border-[#D1D8DB] font-sans font-medium">
-                  Cognitive OS
-                </span>
               </div>
             </div>
           </button>

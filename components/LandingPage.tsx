@@ -68,7 +68,7 @@ export function LandingPage({
         <div className="mb-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FFFFFF] border border-[#D1D8DB] text-[11px] font-sans font-medium text-[#2C3539] tracking-wider uppercase shadow-2xs">
             <span className="w-2 h-2 rounded-full bg-[#8DA399] animate-pulse" />
-            <span>PAI COGNITIVE OS &bull; ZERO-LOSS PERSISTENT MEMORY</span>
+            <span>PAI &bull; ZERO-LOSS PERSISTENT MEMORY</span>
           </div>
         </div>
 
@@ -194,7 +194,7 @@ export function LandingPage({
       <footer className="border-t border-[#D1D8DB]/60 py-6 px-8 flex flex-col sm:flex-row items-center justify-between text-[13px] font-sans text-[#6B8E9B] gap-4">
         <div className="flex items-center gap-2">
           <span className="w-1.5 h-1.5 rounded-full bg-[#8DA399]"></span>
-          <span className="text-xs text-[#2C3539] font-serif italic">PAI Cognitive OS</span>
+          <span className="text-xs text-[#2C3539] font-serif italic">PAI</span>
         </div>
 
         <div className="flex items-center gap-6 text-xs uppercase tracking-[0.05em]">

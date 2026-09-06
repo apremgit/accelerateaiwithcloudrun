@@ -1,7 +1,17 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Check, Sliders, Clock, MapPin, Database } from 'lucide-react';
+import React, { useState } from 'react';
+import {
+  ArrowLeft,
+  Check,
+  Sliders,
+  Clock,
+  Compass,
+  Database,
+  Sparkles,
+  Zap,
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export interface UserPreferencesData {
   tone: 'direct' | 'balanced' | 'reflective';
@@ -71,57 +81,87 @@ export function Preferences({ onBack, onPreferencesUpdated }: PreferencesProps) 
     setIsSaved(true);
     setTimeout(() => {
       setIsSaved(false);
-    }, 3000);
+    }, 2800);
   };
 
   return (
-    <div id="view-preferences" className="min-h-[calc(100vh-4.5rem)] bg-[#F9F8F6] text-[#2C3539] py-12 px-6 sm:px-8 flex flex-col justify-between">
-      {/* 600px centered container matching spec */}
-      <div className="max-w-[600px] mx-auto w-full space-y-10">
+    <div
+      id="view-preferences"
+      data-lenis-prevent="true"
+      className="min-h-full bg-[#0a0a0a] text-[#f4f4f4] py-12 px-6 sm:px-12 flex flex-col justify-between selection:bg-[#D4AF37]/30 selection:text-[#f4f4f4]"
+    >
+      <div className="max-w-3xl mx-auto w-full space-y-10">
         {/* Navigation & Breadcrumb */}
-        <div className="flex items-center justify-between">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="flex items-center justify-between"
+        >
           <button
             id="btn-preferences-back"
             onClick={onBack}
-            className="inline-flex items-center gap-2 text-xs uppercase tracking-[0.05em] text-[#6B8E9B] hover:opacity-80 transition-opacity cursor-pointer font-sans"
+            className="inline-flex items-center gap-2 text-xs uppercase tracking-wider font-mono text-[#7d7d7d] hover:text-white transition-colors cursor-pointer"
+            data-cursor="RETURN"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Return</span>
           </button>
-          <span className="text-[11px] uppercase tracking-[0.1em] text-[#6B8E9B] font-sans font-medium">
-            Settings &bull; Pacing &bull; Tone
+          <span className="text-[11px] uppercase tracking-widest font-mono text-[#D4AF37] flex items-center gap-2 px-3 py-1 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/25">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] animate-pulse" />
+            CONFIGURATIONS &bull; PACING &bull; TONE
           </span>
-        </div>
+        </motion.div>
 
         {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl sm:text-4xl font-serif text-[#2C3539] font-normal tracking-[-0.02em]">
-            Preferences
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="space-y-3"
+        >
+          <div className="flex items-center gap-2 text-xs font-mono text-[#7d7d7d] uppercase tracking-wider">
+            <Sliders className="w-3.5 h-3.5 text-[#10b981]" />
+            <span>Runtime Control Parameters</span>
+          </div>
+          <h1 className="text-4xl sm:text-5xl font-heading font-medium tracking-tight text-[#f4f4f4] leading-tight">
+            Preferences.
           </h1>
-          <p className="text-base text-[#6B8E9B] font-sans font-light">
-            Fine-tune the companion&apos;s pacing, tone, and sensory memory.
+          <p className="text-base text-[#999] font-normal leading-relaxed">
+            Calibrate PAI&apos;s cognitive tempo, reasoning tone, spatial memory grounding, and cloud persistence.
           </p>
-        </div>
+        </motion.div>
 
-        {/* Preferences Rows */}
-        <div className="space-y-1 divide-y divide-[#D1D8DB] border-y border-[#D1D8DB]">
-          {/* Tone Setting */}
-          <div className="py-6 space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <label htmlFor="tone-slider" className="text-sm font-sans font-medium text-[#2C3539] block">
-                  Companion Tone
-                </label>
-                <p className="text-xs text-[#6B8E9B] font-sans font-light">
-                  From crisp succinct analysis to spacious, contemplative depth.
+        {/* Divider */}
+        <div className="border-t border-white/10 w-full" />
+
+        {/* Preferences Cards */}
+        <div className="space-y-4">
+          {/* Card 1: Tone Setting */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.15 }}
+            className="p-6 rounded-xl bg-[#111111] border border-white/10 hover:border-white/20 transition-all space-y-6"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-[#D4AF37]" />
+                  <label htmlFor="tone-slider" className="text-base font-heading font-semibold text-white block">
+                    Companion Reasoning Tone
+                  </label>
+                </div>
+                <p className="text-xs sm:text-sm text-[#999]">
+                  Modulates the system instruction prompt: from crisp direct answers to spacious, contemplative depth.
                 </p>
               </div>
-              <span className="text-xs uppercase tracking-[0.05em] font-sans font-semibold text-[#6B8E9B] px-2.5 py-1 rounded bg-[#FFFFFF] border border-[#D1D8DB]">
+              <span className="text-xs uppercase font-mono tracking-wider font-semibold text-[#D4AF37] px-3 py-1 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 whitespace-nowrap">
                 {preferences.tone}
               </span>
             </div>
 
-            <div className="space-y-2 pt-1">
+            <div className="space-y-3 pt-2">
               <input
                 id="tone-slider"
                 type="range"
@@ -130,24 +170,32 @@ export function Preferences({ onBack, onPreferencesUpdated }: PreferencesProps) 
                 step="1"
                 value={toneToNumber(preferences.tone)}
                 onChange={(e) => handleToneChange(Number(e.target.value))}
-                className="w-full accent-[#6B8E9B] cursor-pointer h-1.5 bg-[#D1D8DB] rounded-lg"
+                className="w-full accent-[#D4AF37] cursor-pointer h-2 bg-[#222] rounded-lg appearance-none"
               />
-              <div className="flex justify-between text-[11px] uppercase tracking-[0.05em] text-[#6B8E9B]/80 font-sans font-medium">
-                <span>Direct</span>
-                <span>Balanced</span>
-                <span>Reflective</span>
+              <div className="flex justify-between text-xs font-mono uppercase tracking-wider text-[#7d7d7d]">
+                <span className={preferences.tone === 'direct' ? 'text-white font-bold' : ''}>Direct</span>
+                <span className={preferences.tone === 'balanced' ? 'text-white font-bold' : ''}>Balanced</span>
+                <span className={preferences.tone === 'reflective' ? 'text-white font-bold' : ''}>Reflective</span>
               </div>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Pacing Toggle: 2s Artificial Calm Delay */}
-          <div className="py-6 flex items-center justify-between gap-4">
+          {/* Card 2: Pacing Toggle (2s Delay) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.25 }}
+            className="p-6 rounded-xl bg-[#111111] border border-white/10 hover:border-white/20 transition-all flex items-center justify-between gap-6"
+          >
             <div className="space-y-1">
-              <span className="text-sm font-sans font-medium text-[#2C3539] block">
-                Artificial Pacing Delay (2s)
-              </span>
-              <p className="text-xs text-[#6B8E9B] font-sans font-light">
-                Introduces a gentle 2-second pause before reflections reveal, eliminating urgency.
+              <div className="flex items-center gap-2">
+                <Clock className="w-4 h-4 text-[#10b981]" />
+                <span className="text-base font-heading font-semibold text-white block">
+                  Artificial Pacing Delay (2s)
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-[#999]">
+                Injects an intentional calm pause before reflections reveal, reducing frantic reactivity and urgency.
               </p>
             </div>
 
@@ -160,26 +208,35 @@ export function Preferences({ onBack, onPreferencesUpdated }: PreferencesProps) 
                 setIsSaved(false);
                 setPreferences((prev) => ({ ...prev, pacingDelay: !prev.pacingDelay }));
               }}
-              className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-                preferences.pacingDelay ? 'bg-[#6B8E9B]' : 'bg-[#D1D8DB]'
+              className={`w-14 h-7 rounded-full transition-colors relative cursor-pointer shrink-0 ${
+                preferences.pacingDelay ? 'bg-[#10b981]' : 'bg-[#262626] border border-white/10'
               }`}
+              data-cursor="TOGGLE"
             >
               <span
-                className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                  preferences.pacingDelay ? 'translate-x-7' : 'translate-x-1'
+                className={`w-5 h-5 rounded-full bg-white absolute top-1 transition-transform shadow-md ${
+                  preferences.pacingDelay ? 'translate-x-8' : 'translate-x-1'
                 }`}
               />
             </button>
-          </div>
+          </motion.div>
 
-          {/* Spatial Awareness (Google Maps) */}
-          <div className="py-6 flex items-center justify-between gap-4">
+          {/* Card 3: Spatial Awareness (Google Maps) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.35 }}
+            className="p-6 rounded-xl bg-[#111111] border border-white/10 hover:border-white/20 transition-all flex items-center justify-between gap-6"
+          >
             <div className="space-y-1">
-              <span className="text-sm font-sans font-medium text-[#2C3539] block">
-                Google Maps &amp; Spatial Grounding
-              </span>
-              <p className="text-xs text-[#6B8E9B] font-sans font-light">
-                Allows finding tranquil physical sanctuaries, botanical gardens, and contemplative walking routes.
+              <div className="flex items-center gap-2">
+                <Compass className="w-4 h-4 text-[#3b82f6]" />
+                <span className="text-base font-heading font-semibold text-white block">
+                  Google Maps &amp; Spatial Grounding
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-[#999]">
+                Enables the live Places (New) and Routes API agent to discover peaceful physical sanctuaries, botanical gardens, and contemplative walks.
               </p>
             </div>
 
@@ -192,26 +249,35 @@ export function Preferences({ onBack, onPreferencesUpdated }: PreferencesProps) 
                 setIsSaved(false);
                 setPreferences((prev) => ({ ...prev, enableMapsContext: !prev.enableMapsContext }));
               }}
-              className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-                preferences.enableMapsContext ? 'bg-[#6B8E9B]' : 'bg-[#D1D8DB]'
+              className={`w-14 h-7 rounded-full transition-colors relative cursor-pointer shrink-0 ${
+                preferences.enableMapsContext ? 'bg-[#3b82f6]' : 'bg-[#262626] border border-white/10'
               }`}
+              data-cursor="TOGGLE"
             >
               <span
-                className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                  preferences.enableMapsContext ? 'translate-x-7' : 'translate-x-1'
+                className={`w-5 h-5 rounded-full bg-white absolute top-1 transition-transform shadow-md ${
+                  preferences.enableMapsContext ? 'translate-x-8' : 'translate-x-1'
                 }`}
               />
             </button>
-          </div>
+          </motion.div>
 
-          {/* Memory Storage Mode */}
-          <div className="py-6 flex items-center justify-between gap-4">
+          {/* Card 4: Durable Firestore Persistence */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.45 }}
+            className="p-6 rounded-xl bg-[#111111] border border-white/10 hover:border-white/20 transition-all flex items-center justify-between gap-6"
+          >
             <div className="space-y-1">
-              <span className="text-sm font-sans font-medium text-[#2C3539] block">
-                Durable Cloud Persistence
-              </span>
-              <p className="text-xs text-[#6B8E9B] font-sans font-light">
-                Sync securely to your owner-partitioned Firestore database across sessions.
+              <div className="flex items-center gap-2">
+                <Database className="w-4 h-4 text-[#8b5cf6]" />
+                <span className="text-base font-heading font-semibold text-white block">
+                  Durable Cloud Persistence
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-[#999]">
+                Sync reflections securely to your private, owner-partitioned Google Cloud Firestore vault across devices.
               </p>
             </div>
 
@@ -227,51 +293,58 @@ export function Preferences({ onBack, onPreferencesUpdated }: PreferencesProps) 
                   persistenceMode: prev.persistenceMode === 'firestore' ? 'session' : 'firestore',
                 }));
               }}
-              className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${
-                preferences.persistenceMode === 'firestore' ? 'bg-[#6B8E9B]' : 'bg-[#D1D8DB]'
+              className={`w-14 h-7 rounded-full transition-colors relative cursor-pointer shrink-0 ${
+                preferences.persistenceMode === 'firestore' ? 'bg-[#8b5cf6]' : 'bg-[#262626] border border-white/10'
               }`}
+              data-cursor="TOGGLE"
             >
               <span
-                className={`w-4 h-4 rounded-full bg-white absolute top-1 transition-transform ${
-                  preferences.persistenceMode === 'firestore' ? 'translate-x-7' : 'translate-x-1'
+                className={`w-5 h-5 rounded-full bg-white absolute top-1 transition-transform shadow-md ${
+                  preferences.persistenceMode === 'firestore' ? 'translate-x-8' : 'translate-x-1'
                 }`}
               />
             </button>
-          </div>
+          </motion.div>
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center justify-between pt-4">
-          <span className="text-xs font-sans text-[#6B8E9B]">
-            {isDirty ? 'Unsaved modifications.' : 'Configurations in rhythm.'}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.55 }}
+          className="flex items-center justify-between pt-4"
+        >
+          <span className="text-xs font-mono text-[#7d7d7d]">
+            {isDirty ? '● Unsaved modifications pending' : '✓ Configurations synchronized'}
           </span>
 
           <button
             id="btn-save-preferences"
             onClick={handleSave}
-            className={`w-[140px] py-3 rounded text-xs font-sans uppercase tracking-[0.05em] transition-all cursor-pointer flex items-center justify-center gap-2 ${
+            className={`px-6 py-3 rounded-lg text-xs font-mono uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-2 ${
               isSaved
-                ? 'bg-[#FFFFFF] border border-[#8DA399] text-[#8DA399]'
+                ? 'bg-[#10b981] text-black font-semibold'
                 : isDirty
-                ? 'bg-[#6B8E9B] text-white hover:opacity-90 animate-pulse'
-                : 'bg-[#6B8E9B] text-white hover:opacity-90'
+                ? 'bg-[#D4AF37] text-black font-semibold hover:bg-[#c49f27] animate-pulse shadow-lg shadow-[#D4AF37]/20'
+                : 'bg-white/10 hover:bg-white/20 text-white font-medium border border-white/15'
             }`}
+            data-cursor="SAVE"
           >
             {isSaved ? (
               <>
-                <Check className="w-3.5 h-3.5" />
-                <span>Preserved.</span>
+                <Check className="w-4 h-4" />
+                <span>Preserved</span>
               </>
             ) : (
               <span>Save Changes</span>
             )}
           </button>
-        </div>
-      </div>
+        </motion.div>
 
-      {/* Footer Note */}
-      <div className="text-center pt-16 pb-4 text-xs font-sans text-[#6B8E9B]/70">
-        <p>Serene Minimalist AI &bull; Thoughtful configurations.</p>
+        {/* Footer Note */}
+        <div className="text-center pt-8 pb-4 text-xs font-mono text-[#7d7d7d]">
+          <p>PAI &bull; Sovereign Companion Configuration Layer</p>
+        </div>
       </div>
     </div>
   );

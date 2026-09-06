@@ -21,9 +21,7 @@ import {
   Check,
   AlertCircle,
   RefreshCw,
-  Share2,
   Copy,
-  ChevronRight,
   Info,
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
@@ -241,24 +239,30 @@ export function MapsExplorerModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-[#2C3539]/30 backdrop-blur-xs font-sans animate-fade-in">
-      <div className="bg-[#F9F8F6] w-full max-w-4xl h-[92vh] max-h-[820px] rounded-2xl border border-[#D1D8DB] shadow-2xl flex flex-col overflow-hidden text-[#2C3539]">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/80 backdrop-blur-md font-sans animate-fade-in selection:bg-[#3b82f6]/30 selection:text-white"
+      data-lenis-prevent="true"
+    >
+      <div 
+        className="bg-[#0f0f0f] w-full max-w-4xl h-[92vh] max-h-[820px] rounded-2xl border border-white/15 shadow-2xl flex flex-col overflow-hidden text-[#f4f4f4]"
+        data-lenis-prevent="true"
+      >
         {/* Header */}
-        <div className="px-6 py-4 bg-[#F9F8F6] border-b border-[#D1D8DB] flex items-center justify-between">
+        <div className="px-6 py-4 bg-[#141414] border-b border-white/10 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-md bg-[#6B8E9B] text-white flex items-center justify-center shadow-xs">
+            <div className="w-9 h-9 rounded-lg bg-[#3b82f6]/15 border border-[#3b82f6]/30 text-[#3b82f6] flex items-center justify-center shadow-xs">
               <Compass className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="font-serif font-normal text-lg text-[#2C3539]">
+                <h3 className="font-heading font-medium text-lg text-white">
                   Google Maps & Journey Agent
                 </h3>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-[#FFFFFF] border border-[#D1D8DB] text-[#6B8E9B] font-sans font-medium uppercase tracking-[0.05em]">
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-[#3b82f6]/10 border border-[#3b82f6]/30 text-[#60a5fa] font-mono font-semibold uppercase tracking-wider">
                   Real-Time Maps
                 </span>
               </div>
-              <p className="text-xs text-[#6B8E9B] font-sans font-light">
+              <p className="text-xs text-[#7d7d7d] font-mono">
                 Places API (New) • Routes API • Conversational Grounding
               </p>
             </div>
@@ -267,7 +271,7 @@ export function MapsExplorerModal({
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
-              className="w-8 h-8 flex items-center justify-center rounded bg-[#FFFFFF] border border-[#D1D8DB] text-[#6B8E9B] hover:text-[#2C3539] hover:bg-[#F9F8F6] transition-colors cursor-pointer"
+              className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-[#7d7d7d] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -275,53 +279,53 @@ export function MapsExplorerModal({
         </div>
 
         {/* Tab Switcher */}
-        <div className="px-6 py-2.5 bg-[#FFFFFF] border-b border-[#D1D8DB] flex items-center gap-2 text-xs font-sans uppercase tracking-[0.05em]">
+        <div className="px-6 py-2.5 bg-[#141414] border-b border-white/10 flex items-center gap-2 text-xs font-mono uppercase tracking-wider">
           <button
             id="tab-maps-agent"
             onClick={() => setActiveTab('agent')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all cursor-pointer ${
               activeTab === 'agent'
-                ? 'bg-[#6B8E9B] text-white font-medium shadow-xs'
-                : 'bg-[#F9F8F6] text-[#6B8E9B] hover:text-[#2C3539] border border-[#D1D8DB]'
+                ? 'bg-white/15 text-white font-semibold border border-white/20 shadow-xs'
+                : 'bg-white/5 text-[#7d7d7d] hover:text-white border border-white/5'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
+            <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
             <span>AI Maps Agent</span>
           </button>
 
           <button
             id="tab-maps-places"
             onClick={() => setActiveTab('places')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all cursor-pointer ${
               activeTab === 'places'
-                ? 'bg-[#6B8E9B] text-white font-medium shadow-xs'
-                : 'bg-[#F9F8F6] text-[#6B8E9B] hover:text-[#2C3539] border border-[#D1D8DB]'
+                ? 'bg-white/15 text-white font-semibold border border-white/20 shadow-xs'
+                : 'bg-white/5 text-[#7d7d7d] hover:text-white border border-white/5'
             }`}
           >
-            <MapPin className="w-3.5 h-3.5" />
+            <MapPin className="w-3.5 h-3.5 text-[#10b981]" />
             <span>Places Finder</span>
           </button>
 
           <button
             id="tab-maps-routes"
             onClick={() => setActiveTab('routes')}
-            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded transition-all cursor-pointer ${
+            className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg transition-all cursor-pointer ${
               activeTab === 'routes'
-                ? 'bg-[#6B8E9B] text-white font-medium shadow-xs'
-                : 'bg-[#F9F8F6] text-[#6B8E9B] hover:text-[#2C3539] border border-[#D1D8DB]'
+                ? 'bg-white/15 text-white font-semibold border border-white/20 shadow-xs'
+                : 'bg-white/5 text-[#7d7d7d] hover:text-white border border-white/5'
             }`}
           >
-            <Navigation className="w-3.5 h-3.5" />
+            <Navigation className="w-3.5 h-3.5 text-[#3b82f6]" />
             <span>Routes & Directions</span>
           </button>
         </div>
 
         {/* TAB 1: AI MAPS AGENT CONVERSATION */}
         {activeTab === 'agent' && (
-          <div className="flex-1 flex flex-col overflow-hidden bg-[#fcfaf7]">
+          <div className="flex-1 flex flex-col overflow-hidden bg-[#0a0a0a]">
             {/* Presets Bar */}
-            <div className="px-6 py-2 bg-[#fcfaf7]/80 border-b border-[#f5f2ed] flex items-center gap-1.5 overflow-x-auto scrollbar-none text-[11px]">
-              <span className="text-[#8c887d] font-bold text-[10px] uppercase tracking-wider shrink-0 mr-1">
+            <div className="px-6 py-2.5 bg-[#111111] border-b border-white/10 flex items-center gap-1.5 overflow-x-auto scrollbar-none text-[11px] font-mono">
+              <span className="text-[#7d7d7d] font-bold text-[10px] uppercase tracking-wider shrink-0 mr-1">
                 Suggestions:
               </span>
               {PRESET_QUERIES.map((preset, idx) => (
@@ -329,7 +333,7 @@ export function MapsExplorerModal({
                   key={idx}
                   onClick={() => handleSendAgentMessage(preset)}
                   disabled={isAgentThinking}
-                  className="px-3 py-1 rounded-full bg-white border border-[#e5e1da] text-[#5A5A40] hover:bg-[#f5f2ed] transition-colors whitespace-nowrap shrink-0 disabled:opacity-50 cursor-pointer"
+                  className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[#dcdcdc] hover:bg-white/15 hover:text-white transition-colors whitespace-nowrap shrink-0 disabled:opacity-40 cursor-pointer"
                 >
                   {preset}
                 </button>
@@ -346,50 +350,50 @@ export function MapsExplorerModal({
                     className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} space-y-2`}
                   >
                     <div
-                      className={`max-w-[88%] rounded-3xl p-5 shadow-xs ${
+                      className={`max-w-[88%] rounded-2xl p-5 shadow-md ${
                         isUser
-                          ? 'bg-[#5A5A40] text-white rounded-br-xs'
-                          : 'bg-white border border-[#e5e1da] text-[#3a3a35] rounded-bl-xs'
+                          ? 'bg-[#1c1c1c] border border-white/15 text-white rounded-br-xs'
+                          : 'bg-[#141414] border border-white/10 text-[#f4f4f4] rounded-bl-xs'
                       }`}
                     >
-                      <div className="text-sm leading-relaxed prose prose-stone max-w-none">
+                      <div className="text-sm leading-relaxed prose prose-invert max-w-none">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
 
                       {/* Display Place Cards if provided by tool */}
                       {msg.places && msg.places.length > 0 && (
-                        <div className="mt-4 pt-3 border-t border-[#f0ede8] space-y-2">
-                          <p className="text-[11px] font-bold uppercase tracking-wider text-[#5A5A40] flex items-center gap-1">
+                        <div className="mt-4 pt-3 border-t border-white/10 space-y-2">
+                          <p className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#10b981] flex items-center gap-1">
                             <MapPin className="w-3 h-3" />
                             Grounded Places ({msg.places.length})
                           </p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                             {msg.places.map((place) => (
                               <div
                                 key={place.id}
-                                className="p-3 bg-[#fcfaf7] rounded-xl border border-[#e5e1da] text-xs space-y-1.5 flex flex-col justify-between"
+                                className="p-3.5 bg-[#1a1a1a] rounded-xl border border-white/10 text-xs space-y-2 flex flex-col justify-between"
                               >
                                 <div>
                                   <div className="flex items-start justify-between gap-1">
-                                    <h5 className="font-bold text-[#3a3a35] text-xs">{place.name}</h5>
+                                    <h5 className="font-heading font-semibold text-white text-xs leading-snug">{place.name}</h5>
                                     {place.rating && (
-                                      <span className="flex items-center gap-0.5 text-amber-700 font-bold text-[10px] shrink-0 bg-amber-50 px-1.5 py-0.5 rounded">
-                                        <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
+                                      <span className="flex items-center gap-0.5 text-amber-400 font-bold text-[10px] shrink-0 bg-amber-400/10 border border-amber-400/20 px-1.5 py-0.5 rounded">
+                                        <Star className="w-2.5 h-2.5 fill-amber-400 text-amber-400" />
                                         {place.rating}
                                       </span>
                                     )}
                                   </div>
-                                  <p className="text-[11px] text-[#8c887d] line-clamp-2 mt-0.5">
+                                  <p className="text-[11px] text-[#999] line-clamp-2 mt-1">
                                     {place.address}
                                   </p>
                                 </div>
 
-                                <div className="flex items-center justify-between pt-1 border-t border-[#e5e1da]/60">
+                                <div className="flex items-center justify-between pt-2 border-t border-white/5">
                                   <a
                                     href={place.googleMapsUri}
                                     target="_blank"
                                     rel="noreferrer"
-                                    className="text-[10px] font-bold text-[#5A5A40] hover:underline flex items-center gap-0.5"
+                                    className="text-[10px] font-mono text-[#60a5fa] hover:underline flex items-center gap-0.5"
                                   >
                                     View in Maps
                                     <ExternalLink className="w-2.5 h-2.5" />
@@ -402,12 +406,12 @@ export function MapsExplorerModal({
                                           place.id
                                         )
                                       }
-                                      className="text-[10px] font-bold uppercase tracking-wider text-[#5A5A40] hover:text-[#3a3a35] flex items-center gap-0.5 bg-white px-2 py-0.5 rounded-full border border-[#e5e1da] cursor-pointer"
+                                      className="text-[10px] font-mono uppercase tracking-wider text-white hover:text-[#D4AF37] flex items-center gap-0.5 bg-white/10 px-2 py-0.5 rounded-full border border-white/10 cursor-pointer transition-colors"
                                     >
                                       {insertedId === place.id ? (
                                         <>
-                                          <Check className="w-2.5 h-2.5 text-emerald-600" />
-                                          <span className="text-emerald-600">Added</span>
+                                          <Check className="w-2.5 h-2.5 text-[#10b981]" />
+                                          <span className="text-[#10b981]">Added</span>
                                         </>
                                       ) : (
                                         <>
@@ -426,86 +430,47 @@ export function MapsExplorerModal({
 
                       {/* Display Route Card if provided by tool */}
                       {msg.route && (
-                        <div className="mt-4 pt-3 border-t border-[#f0ede8] p-3 bg-[#fcfaf7] rounded-2xl border border-[#e5e1da] text-xs space-y-2">
+                        <div className="mt-4 pt-3 border-t border-white/10 p-3.5 bg-[#1a1a1a] rounded-xl border border-white/10 text-xs space-y-2.5">
                           <div className="flex items-center justify-between">
-                            <span className="text-[11px] font-bold uppercase tracking-wider text-[#5A5A40] flex items-center gap-1">
+                            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#3b82f6] flex items-center gap-1">
                               <Navigation className="w-3.5 h-3.5" />
                               Route Calculated
                             </span>
-                            <div className="flex items-center gap-2">
-                              <span className="bg-[#5A5A40] text-white px-2 py-0.5 rounded-full text-[10px] font-bold">
+                            <div className="flex items-center gap-2 font-mono">
+                              <span className="bg-[#3b82f6] text-white px-2 py-0.5 rounded-full text-[10px] font-bold">
                                 {msg.route.distanceMiles}
                               </span>
-                              <span className="bg-[#f5f2ed] border border-[#e5e1da] text-[#3a3a35] px-2 py-0.5 rounded-full text-[10px] font-bold">
+                              <span className="bg-white/10 border border-white/10 text-white px-2 py-0.5 rounded-full text-[10px] font-bold">
                                 ~{msg.route.durationMinutes}
                               </span>
                             </div>
                           </div>
 
-                          <p className="text-xs text-[#5A5A40] font-medium">{msg.route.summary}</p>
+                          <p className="text-xs text-white/90 font-medium">{msg.route.summary}</p>
 
                           {msg.route.steps.length > 0 && (
-                            <div className="space-y-1 pt-1 max-h-36 overflow-y-auto text-[11px] text-[#8c887d] divide-y divide-[#e5e1da]/50">
+                            <div className="space-y-1 pt-1 max-h-36 overflow-y-auto text-[11px] text-[#999] divide-y divide-white/5">
                               {msg.route.steps.slice(0, 5).map((step, idx) => (
                                 <div key={idx} className="py-1 flex items-start justify-between gap-2">
-                                  <span>
-                                    {idx + 1}. {step.instruction}
-                                  </span>
-                                  <span className="text-[9px] font-semibold shrink-0">
-                                    {step.distance}
-                                  </span>
+                                  <span>{step.instruction}</span>
+                                  <span className="font-mono text-[10px] text-[#7d7d7d] shrink-0">{step.distance}</span>
                                 </div>
                               ))}
                             </div>
                           )}
-
-                          <div className="flex items-center justify-between pt-1 border-t border-[#e5e1da]">
-                            <a
-                              href={msg.route.googleMapsUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-[10px] font-bold text-[#5A5A40] hover:underline flex items-center gap-0.5"
-                            >
-                              Open in Google Maps
-                              <ExternalLink className="w-2.5 h-2.5" />
-                            </a>
-
-                            {onInsertIntoJournal && (
-                              <button
-                                onClick={() =>
-                                  handleInsert(
-                                    `🗺️ **Route Plan** (${msg.route?.distanceMiles}, ~${msg.route?.durationMinutes})\n${msg.route?.summary}\n[Navigate on Google Maps](${msg.route?.googleMapsUrl})`,
-                                    'route-plan'
-                                  )
-                                }
-                                className="text-[10px] font-bold uppercase tracking-wider text-[#5A5A40] hover:text-[#3a3a35] flex items-center gap-0.5 bg-white px-2 py-0.5 rounded-full border border-[#e5e1da] cursor-pointer"
-                              >
-                                {insertedId === 'route-plan' ? (
-                                  <>
-                                    <Check className="w-2.5 h-2.5 text-emerald-600" />
-                                    <span className="text-emerald-600">Added</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Plus className="w-2.5 h-2.5" />
-                                    <span>Add to Entry</span>
-                                  </>
-                                )}
-                              </button>
-                            )}
-                          </div>
                         </div>
                       )}
                     </div>
 
+                    {/* Message Actions */}
                     {!isUser && (
-                      <div className="flex items-center gap-2 text-[10px] text-[#8c887d] px-2">
+                      <div className="flex items-center gap-3 text-[11px] font-mono text-[#7d7d7d] px-2">
                         <button
                           onClick={() => copyToClipboard(msg.content, msg.id)}
-                          className="hover:text-[#3a3a35] flex items-center gap-0.5 cursor-pointer"
+                          className="hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
                         >
                           {copiedId === msg.id ? (
-                            <Check className="w-3 h-3 text-emerald-600" />
+                            <Check className="w-3 h-3 text-[#10b981]" />
                           ) : (
                             <Copy className="w-3 h-3" />
                           )}
@@ -514,10 +479,10 @@ export function MapsExplorerModal({
                         {onInsertIntoJournal && (
                           <button
                             onClick={() => handleInsert(msg.content, `msg-${msg.id}`)}
-                            className="hover:text-[#3a3a35] flex items-center gap-0.5 cursor-pointer"
+                            className="hover:text-white flex items-center gap-0.5 cursor-pointer transition-colors"
                           >
                             {insertedId === `msg-${msg.id}` ? (
-                              <Check className="w-3 h-3 text-emerald-600" />
+                              <Check className="w-3 h-3 text-[#10b981]" />
                             ) : (
                               <Plus className="w-3 h-3" />
                             )}
@@ -531,9 +496,9 @@ export function MapsExplorerModal({
               })}
 
               {isAgentThinking && (
-                <div className="flex items-center gap-3 p-4 rounded-2xl bg-white border border-[#e5e1da] max-w-md animate-pulse">
-                  <div className="w-3 h-3 rounded-full bg-[#5A5A40] animate-ping" />
-                  <span className="text-xs text-[#5A5A40] font-medium font-serif italic">
+                <div className="flex items-center gap-3 p-4 rounded-xl bg-[#141414] border border-white/10 max-w-md animate-pulse">
+                  <div className="w-3 h-3 rounded-full bg-[#3b82f6] animate-ping" />
+                  <span className="text-xs text-white/80 font-mono">
                     Querying Google Maps Places & Routes Grounding tools...
                   </span>
                 </div>
@@ -543,27 +508,27 @@ export function MapsExplorerModal({
             </div>
 
             {/* Chat Input Box */}
-            <div className="p-4 bg-white border-t border-[#e5e1da]">
+            <div className="p-4 bg-[#141414] border-t border-white/10">
               <form
                 onSubmit={(e) => {
                   e.preventDefault();
                   handleSendAgentMessage();
                 }}
-                className="flex items-center gap-2 bg-[#fcfaf7] border border-[#e5e1da] rounded-2xl px-3 py-1.5 focus-within:border-[#5A5A40] focus-within:ring-1 focus-within:ring-[#5A5A40]"
+                className="flex items-center gap-2 bg-[#1a1a1a] border border-white/15 rounded-xl px-3 py-1.5 focus-within:border-[#3b82f6] transition-colors"
               >
-                <Compass className="w-4 h-4 text-[#8c887d]" />
+                <Compass className="w-4 h-4 text-[#7d7d7d]" />
                 <input
                   type="text"
                   placeholder="Ask about places, routes, scenic walks, cafes, or directions..."
                   value={chatInput}
                   onChange={(e) => setChatInput(e.target.value)}
                   disabled={isAgentThinking}
-                  className="flex-1 bg-transparent text-xs text-[#3a3a35] placeholder-[#a19d93] focus:outline-none py-2"
+                  className="flex-1 bg-transparent text-xs text-white placeholder-white/30 focus:outline-none py-2 font-sans"
                 />
                 <button
                   type="submit"
                   disabled={!chatInput.trim() || isAgentThinking}
-                  className="p-2 rounded-xl bg-[#5A5A40] text-white hover:bg-[#4a4a35] disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs"
+                  className="p-2 rounded-lg bg-[#3b82f6] text-white hover:bg-[#2563eb] disabled:opacity-30 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs font-bold"
                 >
                   <Send className="w-3.5 h-3.5" />
                 </button>
@@ -574,33 +539,33 @@ export function MapsExplorerModal({
 
         {/* TAB 2: DIRECT PLACES FINDER */}
         {activeTab === 'places' && (
-          <div className="flex-1 flex flex-col overflow-hidden bg-[#fcfaf7] p-6 space-y-4">
+          <div className="flex-1 flex flex-col overflow-hidden bg-[#0a0a0a] p-6 space-y-4">
             <div className="space-y-1">
-              <h4 className="font-serif italic font-bold text-base text-[#3a3a35]">
-                Search Places & Mindfulness Spots
+              <h4 className="font-heading font-medium text-base text-white">
+                Search Places &amp; Mindfulness Spots
               </h4>
-              <p className="text-xs text-[#8c887d]">
-                Powered by Google Maps Places API (New) Text Search with live ratings & metadata.
+              <p className="text-xs font-mono text-[#7d7d7d]">
+                Powered by Google Maps Places API (New) Text Search with live ratings &amp; metadata.
               </p>
             </div>
 
             {/* Search Input Bar */}
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
-                <Search className="w-4 h-4 text-[#8c887d] absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-4 h-4 text-[#7d7d7d] absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="text"
                   placeholder="e.g. Zen gardens in Kyoto, quiet libraries in Austin, organic tea houses..."
                   value={placeSearchQuery}
                   onChange={(e) => setPlaceSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearchPlaces()}
-                  className="w-full pl-9 pr-3 py-2.5 text-xs bg-white border border-[#e5e1da] rounded-2xl text-[#3a3a35] placeholder-[#a19d93] focus:outline-none focus:border-[#5A5A40] focus:ring-1 focus:ring-[#5A5A40] shadow-xs"
+                  className="w-full pl-9 pr-3 py-2.5 text-xs bg-[#161616] border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-[#3b82f6] shadow-xs"
                 />
               </div>
               <button
                 onClick={handleSearchPlaces}
                 disabled={!placeSearchQuery.trim() || placesLoading}
-                className="px-5 py-2.5 rounded-2xl bg-[#5A5A40] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#4a4a35] disabled:opacity-50 transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                className="px-5 py-2.5 rounded-xl bg-[#3b82f6] hover:bg-[#2563eb] text-white text-xs font-mono font-bold uppercase tracking-wider disabled:opacity-40 transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
               >
                 {placesLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
                 <span>Search</span>
@@ -608,14 +573,14 @@ export function MapsExplorerModal({
             </div>
 
             {/* Quick Category Suggestions */}
-            <div className="flex items-center gap-1.5 overflow-x-auto text-[11px] pb-1">
+            <div className="flex items-center gap-1.5 overflow-x-auto text-[11px] font-mono pb-1">
               {['Quiet Cafes', 'Public Gardens & Parks', 'Bookstores & Libraries', 'Meditation Centers', 'Scenic Viewpoints'].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => {
                     setPlaceSearchQuery(cat + (userCity ? ` in ${userCity}` : ''));
                   }}
-                  className="px-3 py-1 rounded-full bg-white border border-[#e5e1da] text-[#5A5A40] hover:bg-[#f5f2ed] transition-colors whitespace-nowrap cursor-pointer"
+                  className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[#dcdcdc] hover:bg-white/15 hover:text-white transition-colors whitespace-nowrap cursor-pointer"
                 >
                   {cat}
                 </button>
@@ -625,17 +590,17 @@ export function MapsExplorerModal({
             {/* Results Grid */}
             <div className="flex-1 overflow-y-auto space-y-3 pr-1">
               {placesError && (
-                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                   <p>{placesError}</p>
                 </div>
               )}
 
               {foundPlaces.length === 0 && !placesLoading && !placesError && (
-                <div className="py-16 text-center text-[#8c887d] space-y-2">
-                  <MapPin className="w-8 h-8 mx-auto text-[#a19d93] stroke-[1.5]" />
-                  <p className="font-serif italic text-sm text-[#3a3a35]">Search for places worldwide</p>
-                  <p className="text-xs">Find locations and embed them directly into your journal entries.</p>
+                <div className="py-16 text-center text-[#7d7d7d] space-y-2">
+                  <MapPin className="w-8 h-8 mx-auto text-white/20 stroke-[1.5]" />
+                  <p className="font-heading italic text-sm text-white/70">Search for places worldwide</p>
+                  <p className="text-xs font-mono">Find locations and embed them directly into your journal reflections.</p>
                 </div>
               )}
 
@@ -643,26 +608,26 @@ export function MapsExplorerModal({
                 {foundPlaces.map((place) => (
                   <div
                     key={place.id}
-                    className="p-4 rounded-2xl bg-white border border-[#e5e1da] shadow-xs flex flex-col justify-between space-y-3 hover:border-[#5A5A40]/40 transition-all"
+                    className="p-4 rounded-xl bg-[#141414] border border-white/10 shadow-xs flex flex-col justify-between space-y-3 hover:border-white/25 transition-all"
                   >
                     <div className="space-y-1.5">
                       <div className="flex items-start justify-between gap-2">
-                        <h5 className="font-bold text-sm text-[#3a3a35] leading-tight">{place.name}</h5>
+                        <h5 className="font-heading font-semibold text-sm text-white leading-tight">{place.name}</h5>
                         {place.rating && (
-                          <span className="flex items-center gap-1 text-amber-700 font-bold text-xs bg-amber-50 px-2 py-0.5 rounded-full shrink-0 border border-amber-200">
-                            <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                          <span className="flex items-center gap-1 text-amber-400 font-bold text-xs bg-amber-400/10 px-2 py-0.5 rounded-full shrink-0 border border-amber-400/25">
+                            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
                             {place.rating} ({place.userRatingCount})
                           </span>
                         )}
                       </div>
 
-                      <p className="text-xs text-[#8c887d] leading-relaxed">{place.address}</p>
+                      <p className="text-xs text-[#999] leading-relaxed">{place.address}</p>
 
-                      <div className="flex items-center gap-2 text-[10px] text-[#5A5A40] pt-1">
-                        <span className="px-2 py-0.5 rounded-md bg-[#f5f2ed] font-semibold">{place.type}</span>
+                      <div className="flex items-center gap-2 text-[10px] font-mono text-[#7d7d7d] pt-1">
+                        <span className="px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-white/80">{place.type}</span>
                         {place.isOpenNow !== null && (
                           <span
-                            className={`font-semibold ${place.isOpenNow ? 'text-emerald-700' : 'text-stone-500'}`}
+                            className={`font-semibold ${place.isOpenNow ? 'text-[#10b981]' : 'text-white/40'}`}
                           >
                             {place.isOpenNow ? '● Open now' : '○ Closed'}
                           </span>
@@ -670,12 +635,12 @@ export function MapsExplorerModal({
                       </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-2 border-t border-[#f5f2ed]">
+                    <div className="flex items-center justify-between pt-2 border-t border-white/5">
                       <a
                         href={place.googleMapsUri}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-xs font-bold text-[#5A5A40] hover:underline flex items-center gap-1"
+                        className="text-xs font-mono text-[#60a5fa] hover:underline flex items-center gap-1"
                       >
                         Google Maps
                         <ExternalLink className="w-3 h-3" />
@@ -689,12 +654,12 @@ export function MapsExplorerModal({
                               place.id
                             )
                           }
-                          className="px-3 py-1 rounded-full bg-[#f5f2ed] hover:bg-[#5A5A40] hover:text-white text-[#5A5A40] text-xs font-bold uppercase tracking-wider transition-colors flex items-center gap-1 cursor-pointer"
+                          className="px-3 py-1 rounded-full bg-white/10 hover:bg-[#3b82f6] hover:text-white text-white text-xs font-mono uppercase tracking-wider transition-colors flex items-center gap-1 cursor-pointer"
                         >
                           {insertedId === place.id ? (
                             <>
-                              <Check className="w-3 h-3 text-emerald-600" />
-                              <span>Added</span>
+                              <Check className="w-3 h-3 text-[#10b981]" />
+                              <span className="text-[#10b981]">Added</span>
                             </>
                           ) : (
                             <>
@@ -714,53 +679,53 @@ export function MapsExplorerModal({
 
         {/* TAB 3: DIRECT ROUTES & DIRECTIONS */}
         {activeTab === 'routes' && (
-          <div className="flex-1 flex flex-col overflow-hidden bg-[#fcfaf7] p-6 space-y-4">
+          <div className="flex-1 flex flex-col overflow-hidden bg-[#0a0a0a] p-6 space-y-4">
             <div className="space-y-1">
-              <h4 className="font-serif italic font-bold text-base text-[#3a3a35]">
-                Compute Real-Time Routes & Directions
+              <h4 className="font-heading font-medium text-base text-white">
+                Compute Real-Time Routes &amp; Directions
               </h4>
-              <p className="text-xs text-[#8c887d]">
+              <p className="text-xs font-mono text-[#7d7d7d]">
                 Powered by Google Maps Routes API with real-time traffic, distances, durations, and steps.
               </p>
             </div>
 
             {/* Route Inputs */}
-            <div className="p-4 bg-white rounded-2xl border border-[#e5e1da] shadow-xs space-y-3">
+            <div className="p-4 bg-[#141414] rounded-xl border border-white/10 shadow-xs space-y-3">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#8c887d] flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-[#5A5A40]" /> Origin
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#7d7d7d] flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-[#10b981]" /> Origin
                   </label>
                   <input
                     type="text"
                     placeholder="e.g. Times Square, NYC or Union Square SF"
                     value={originInput}
                     onChange={(e) => setOriginInput(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-[#fcfaf7] border border-[#e5e1da] rounded-xl text-[#3a3a35] focus:outline-none focus:border-[#5A5A40]"
+                    className="w-full px-3 py-2 text-xs bg-[#1a1a1a] border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-[#3b82f6]"
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-[#8c887d] flex items-center gap-1">
-                    <Compass className="w-3 h-3 text-[#5A5A40]" /> Destination
+                  <label className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#7d7d7d] flex items-center gap-1">
+                    <Compass className="w-3 h-3 text-[#3b82f6]" /> Destination
                   </label>
                   <input
                     type="text"
                     placeholder="e.g. Central Park Conservatory or Brooklyn Bridge"
                     value={destinationInput}
                     onChange={(e) => setDestinationInput(e.target.value)}
-                    className="w-full px-3 py-2 text-xs bg-[#fcfaf7] border border-[#e5e1da] rounded-xl text-[#3a3a35] focus:outline-none focus:border-[#5A5A40]"
+                    className="w-full px-3 py-2 text-xs bg-[#1a1a1a] border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-[#3b82f6]"
                   />
                 </div>
               </div>
 
               {/* Mode & Action */}
               <div className="flex items-center justify-between pt-1 flex-wrap gap-2">
-                <div className="flex items-center gap-1 bg-[#f5f2ed] p-1 rounded-xl border border-[#e5e1da] text-xs font-bold">
+                <div className="flex items-center gap-1 bg-[#1a1a1a] p-1 rounded-lg border border-white/10 text-xs font-mono">
                   <button
                     onClick={() => setTravelMode('WALK')}
-                    className={`px-3 py-1 rounded-lg flex items-center gap-1 transition-colors cursor-pointer ${
-                      travelMode === 'WALK' ? 'bg-[#5A5A40] text-white shadow-2xs' : 'text-[#8c887d] hover:text-[#3a3a35]'
+                    className={`px-3 py-1 rounded-md flex items-center gap-1 transition-colors cursor-pointer ${
+                      travelMode === 'WALK' ? 'bg-[#3b82f6] text-white font-semibold shadow-xs' : 'text-[#7d7d7d] hover:text-white'
                     }`}
                   >
                     <Footprints className="w-3.5 h-3.5" />
@@ -769,8 +734,8 @@ export function MapsExplorerModal({
 
                   <button
                     onClick={() => setTravelMode('DRIVE')}
-                    className={`px-3 py-1 rounded-lg flex items-center gap-1 transition-colors cursor-pointer ${
-                      travelMode === 'DRIVE' ? 'bg-[#5A5A40] text-white shadow-2xs' : 'text-[#8c887d] hover:text-[#3a3a35]'
+                    className={`px-3 py-1 rounded-md flex items-center gap-1 transition-colors cursor-pointer ${
+                      travelMode === 'DRIVE' ? 'bg-[#3b82f6] text-white font-semibold shadow-xs' : 'text-[#7d7d7d] hover:text-white'
                     }`}
                   >
                     <Car className="w-3.5 h-3.5" />
@@ -779,8 +744,8 @@ export function MapsExplorerModal({
 
                   <button
                     onClick={() => setTravelMode('BICYCLE')}
-                    className={`px-3 py-1 rounded-lg flex items-center gap-1 transition-colors cursor-pointer ${
-                      travelMode === 'BICYCLE' ? 'bg-[#5A5A40] text-white shadow-2xs' : 'text-[#8c887d] hover:text-[#3a3a35]'
+                    className={`px-3 py-1 rounded-md flex items-center gap-1 transition-colors cursor-pointer ${
+                      travelMode === 'BICYCLE' ? 'bg-[#3b82f6] text-white font-semibold shadow-xs' : 'text-[#7d7d7d] hover:text-white'
                     }`}
                   >
                     <Bike className="w-3.5 h-3.5" />
@@ -789,8 +754,8 @@ export function MapsExplorerModal({
 
                   <button
                     onClick={() => setTravelMode('TRANSIT')}
-                    className={`px-3 py-1 rounded-lg flex items-center gap-1 transition-colors cursor-pointer ${
-                      travelMode === 'TRANSIT' ? 'bg-[#5A5A40] text-white shadow-2xs' : 'text-[#8c887d] hover:text-[#3a3a35]'
+                    className={`px-3 py-1 rounded-md flex items-center gap-1 transition-colors cursor-pointer ${
+                      travelMode === 'TRANSIT' ? 'bg-[#3b82f6] text-white font-semibold shadow-xs' : 'text-[#7d7d7d] hover:text-white'
                     }`}
                   >
                     <Train className="w-3.5 h-3.5" />
@@ -801,7 +766,7 @@ export function MapsExplorerModal({
                 <button
                   onClick={handleComputeRoute}
                   disabled={!originInput.trim() || !destinationInput.trim() || routesLoading}
-                  className="px-5 py-2 rounded-xl bg-[#5A5A40] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#4a4a35] disabled:opacity-50 transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
+                  className="px-5 py-2 rounded-lg bg-[#3b82f6] text-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-[#2563eb] disabled:opacity-40 transition-all flex items-center gap-1.5 shadow-xs cursor-pointer"
                 >
                   {routesLoading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Navigation className="w-3.5 h-3.5" />}
                   <span>Calculate Route</span>
@@ -812,29 +777,29 @@ export function MapsExplorerModal({
             {/* Computed Route Display */}
             <div className="flex-1 overflow-y-auto space-y-3">
               {routesError && (
-                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                   <p>{routesError}</p>
                 </div>
               )}
 
               {computedRoute && (
-                <div className="p-5 bg-white rounded-3xl border border-[#e5e1da] shadow-xs space-y-4">
-                  <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-[#f5f2ed]">
+                <div className="p-5 bg-[#141414] rounded-2xl border border-white/10 shadow-xs space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2 pb-3 border-b border-white/10">
                     <div className="space-y-0.5">
-                      <span className="text-[10px] uppercase tracking-wider font-bold text-[#8c887d]">
+                      <span className="text-[10px] uppercase font-mono tracking-wider font-bold text-[#7d7d7d]">
                         Route Summary
                       </span>
-                      <h4 className="font-serif italic font-bold text-base text-[#3a3a35]">
+                      <h4 className="font-heading font-semibold text-base text-white">
                         {originInput} → {destinationInput}
                       </h4>
                     </div>
 
-                    <div className="flex items-center gap-2">
-                      <div className="px-3 py-1 rounded-full bg-[#5A5A40] text-white text-xs font-bold shadow-2xs">
+                    <div className="flex items-center gap-2 font-mono">
+                      <div className="px-3 py-1 rounded-full bg-[#3b82f6] text-white text-xs font-bold">
                         {computedRoute.distanceMiles} ({computedRoute.distanceKm})
                       </div>
-                      <div className="px-3 py-1 rounded-full bg-[#f5f2ed] border border-[#e5e1da] text-[#3a3a35] text-xs font-bold">
+                      <div className="px-3 py-1 rounded-full bg-white/10 border border-white/10 text-white text-xs font-bold">
                         ~{computedRoute.durationMinutes}
                       </div>
                     </div>
@@ -842,17 +807,17 @@ export function MapsExplorerModal({
 
                   {/* Steps Breakdown */}
                   <div className="space-y-2">
-                    <p className="text-[10px] uppercase tracking-wider font-bold text-[#8c887d]">
+                    <p className="text-[10px] uppercase font-mono tracking-wider font-bold text-[#7d7d7d]">
                       Turn-by-Turn Directions ({computedRoute.steps.length} steps)
                     </p>
-                    <div className="space-y-1.5 max-h-48 overflow-y-auto divide-y divide-[#f5f2ed]">
+                    <div className="space-y-1.5 max-h-48 overflow-y-auto divide-y divide-white/5">
                       {computedRoute.steps.map((step, idx) => (
                         <div key={idx} className="pt-1.5 flex items-start justify-between gap-3 text-xs">
-                          <span className="text-[#3a3a35]">
-                            <strong className="text-[#5A5A40] mr-1">{idx + 1}.</strong>
+                          <span className="text-white/90">
+                            <strong className="text-[#3b82f6] mr-1">{idx + 1}.</strong>
                             {step.instruction}
                           </span>
-                          <span className="text-[10px] text-[#8c887d] font-semibold shrink-0">
+                          <span className="text-[10px] font-mono text-[#7d7d7d] font-semibold shrink-0">
                             {step.distance}
                           </span>
                         </div>
@@ -860,12 +825,12 @@ export function MapsExplorerModal({
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-[#f5f2ed]">
+                  <div className="flex items-center justify-between pt-3 border-t border-white/10">
                     <a
                       href={computedRoute.googleMapsUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-xs font-bold text-[#5A5A40] hover:underline flex items-center gap-1"
+                      className="text-xs font-mono text-[#60a5fa] hover:underline flex items-center gap-1"
                     >
                       Open in Google Maps
                       <ExternalLink className="w-3.5 h-3.5" />
@@ -879,11 +844,11 @@ export function MapsExplorerModal({
                             'custom-route'
                           )
                         }
-                        className="px-4 py-1.5 rounded-full bg-[#5A5A40] text-white text-xs font-bold uppercase tracking-wider hover:bg-[#4a4a35] transition-colors flex items-center gap-1 cursor-pointer"
+                        className="px-4 py-1.5 rounded-full bg-[#3b82f6] text-white text-xs font-mono font-bold uppercase tracking-wider hover:bg-[#2563eb] transition-colors flex items-center gap-1 cursor-pointer"
                       >
                         {insertedId === 'custom-route' ? (
                           <>
-                            <Check className="w-3.5 h-3.5 text-emerald-300" />
+                            <Check className="w-3.5 h-3.5 text-[#10b981]" />
                             <span>Added to Entry</span>
                           </>
                         ) : (
@@ -902,22 +867,22 @@ export function MapsExplorerModal({
         )}
 
         {/* Footer Attribution Banner Required by Terms */}
-        <div className="px-6 py-2.5 bg-[#F9F8F6] border-t border-[#D1D8DB] flex items-center justify-between text-[11px] text-[#6B8E9B] font-sans">
+        <div className="px-6 py-2.5 bg-[#141414] border-t border-white/10 flex items-center justify-between text-[11px] text-[#7d7d7d] font-mono">
           <div className="flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5 text-[#6B8E9B]" />
+            <Info className="w-3.5 h-3.5 text-[#7d7d7d]" />
             <span>
               Real-time geospatial data powered by{' '}
               <a
                 href="https://cloud.google.com/maps-platform/terms?utm_campaign=gmp_mcp_codeassist_v1_aistudio"
                 target="_blank"
                 rel="noreferrer"
-                className="font-medium text-[#2C3539] hover:underline"
+                className="font-medium text-white/90 hover:underline"
               >
                 Google Maps Platform
               </a>
             </span>
           </div>
-          <span className="text-[10px] uppercase tracking-[0.05em] font-medium text-[#8DA399]">
+          <span className="text-[10px] uppercase tracking-wider font-medium text-[#10b981]">
             Places (New) • Routes API
           </span>
         </div>

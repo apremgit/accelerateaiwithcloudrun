@@ -1,21 +1,27 @@
 import type { Metadata } from 'next';
-import { Lora, Albert_Sans } from 'next/font/google';
-import './globals.css'; // Global styles
+import { Sora, Inter, JetBrains_Mono } from 'next/font/google';
+import './globals.css';
 
-const lora = Lora({
+const sora = Sora({
   subsets: ['latin'],
-  variable: '--font-lora',
+  variable: '--font-sora',
   display: 'swap',
 });
 
-const albertSans = Albert_Sans({
+const inter = Inter({
   subsets: ['latin'],
-  variable: '--font-albert-sans',
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ['latin'],
+  variable: '--font-jetbrains-mono',
   display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'PAI - Personal AI Companion & Persistent Memory OS',
+  title: 'PAI - Personal AI Companion & Persistent Memory',
   description: 'Your sovereign cognitive layer. Store all data so you never forget across cooking, coding, and daily skills. Powered by BigQuery Vector RAG, Cloud Run, and Gemini reasoning.',
   openGraph: {
     title: 'PAI - The Companion That Never Forgets',
@@ -25,13 +31,16 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'PAI - The Companion That Never Forgets',
-    description: 'Zero-loss persistent memory OS powered by Google Cloud Run, BigQuery Vector RAG, and Gemini.',
+    description: 'Zero-loss persistent memory powered by Google Cloud Run, BigQuery Vector RAG, and Gemini.',
+  },
+  other: {
+    'theme-color': '#0a0a0a',
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${lora.variable} ${albertSans.variable}`}>
+    <html lang="en" className={`${sora.variable} ${inter.variable} ${jetbrainsMono.variable}`}>
       <body suppressHydrationWarning>{children}</body>
     </html>
   );

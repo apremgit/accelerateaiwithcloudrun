@@ -32,6 +32,7 @@ import {
   RotateCcw,
   Compass,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface DashboardProps {
   user: User | null;
@@ -83,15 +84,6 @@ const SUMMARY_TYPES = [
   },
 ] as const;
 
-const MOODS = [
-  { id: 'Focused', emoji: '🎯', label: 'Focused' },
-  { id: 'Calm', emoji: '🧘', label: 'Calm' },
-  { id: 'Inspired', emoji: '💡', label: 'Inspired' },
-  { id: 'Contemplative', emoji: '💭', label: 'Contemplative' },
-  { id: 'Energized', emoji: '⚡', label: 'Energized' },
-  { id: 'Grateful', emoji: '🙏', label: 'Grateful' },
-];
-
 const PROMPT_SUGGESTIONS = [
   "I'm finding it hard to prioritize tasks. Everything feels urgent, but I know some things are noise.",
   "What is the most important lesson I learned today, and what subtle cognitive patterns influenced my choices?",
@@ -109,7 +101,7 @@ function getCurrentTimestamp(): number {
 
 function formatHistoryDate(timestamp: number): string {
   const date = new Date(timestamp);
-  const month = date.toLocaleString('default', { month: 'long' });
+  const month = date.toLocaleString('default', { month: 'short' });
   const day = date.getDate();
   const suffix =
     day === 1 || day === 21 || day === 31
@@ -161,7 +153,6 @@ export function Dashboard({
   const [activeCategory, setActiveCategory] = useState<JournalEntry['category']>('reflection');
   const [activeMood, setActiveMood] = useState<string>('Calm');
   const [activeTags, setActiveTags] = useState<string[]>(['Sanctuary']);
-  const [newTagInput, setNewTagInput] = useState('');
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputPrompt, setInputPrompt] = useState(initialPrompt);
 
@@ -505,23 +496,6 @@ export function Dashboard({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleAddTag = () => {
-    if (!newTagInput.trim()) return;
-    const tagClean = newTagInput.trim().replace(/^#/, '');
-    if (!activeTags.includes(tagClean)) {
-      const updated = [...activeTags, tagClean];
-      setActiveTags(updated);
-      persistCurrentEntry({ tags: updated });
-    }
-    setNewTagInput('');
-  };
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    const updated = activeTags.filter((t) => t !== tagToRemove);
-    setActiveTags(updated);
-    persistCurrentEntry({ tags: updated });
-  };
-
   // Date filter logic
   const isWithinDateRange = useCallback((timestamp: number, filter: string): boolean => {
     if (filter === 'all') return true;
@@ -565,33 +539,36 @@ export function Dashboard({
     SUMMARY_TYPES.find((s) => s.id === selectedSummaryType) || SUMMARY_TYPES[0];
 
   return (
-    <div className="flex h-[calc(100vh-4rem)] bg-[#F9F8F6] font-sans text-[#2C3539] overflow-hidden">
+    <div 
+      className="flex h-[calc(100vh-3.5rem)] bg-[#0a0a0a] text-[#f4f4f4] font-sans overflow-hidden selection:bg-[#D4AF37]/30 selection:text-[#f4f4f4]"
+      data-lenis-prevent="true"
+    >
       {/* Mobile Drawer Backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-[#2C3539]/30 backdrop-blur-xs z-30 lg:hidden"
+          className="fixed inset-0 bg-black/70 backdrop-blur-xs z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* LEFT COLUMN: History Nav (~20-25% width, border-r: 1px solid #D1D8DB) */}
+      {/* LEFT COLUMN: History Nav (~280px, border-r: 1px solid white/10) */}
       <aside
-        className={`fixed lg:static top-16 bottom-0 left-0 w-72 lg:w-80 bg-[#F9F8F6] border-r border-[#D1D8DB] z-30 flex flex-col transition-transform duration-200 ease-in-out ${
-          sidebarOpen ? 'translate-x-0 shadow-xl' : '-translate-x-full lg:translate-x-0'
+        className={`fixed lg:static top-14 bottom-0 left-0 w-72 lg:w-80 bg-[#0d0d0d] border-r border-white/10 z-30 flex flex-col transition-transform duration-200 ease-in-out ${
+          sidebarOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full lg:translate-x-0'
         }`}
       >
-        {/* Header with Prominent New Entry Button */}
-        <div className="p-5 border-b border-[#D1D8DB] space-y-4">
+        {/* Header with New Entry Button */}
+        <div className="p-5 border-b border-white/10 space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-[0.05em] text-[#6B8E9B] font-sans font-medium">
+            <span className="text-xs uppercase tracking-wider font-mono text-[#7d7d7d]">
               Reflections
             </span>
 
-            {/* Prominent New Entry Button */}
             <button
               id="btn-sidebar-new-entry"
               onClick={createNewEntry}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#6B8E9B] hover:opacity-90 text-white text-xs uppercase tracking-[0.05em] font-sans transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#D4AF37] hover:bg-[#c49f27] text-black font-mono text-xs uppercase tracking-wider font-semibold transition-all cursor-pointer shadow-md"
+              data-cursor="NEW"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>New Entry</span>
@@ -600,19 +577,19 @@ export function Dashboard({
 
           {/* Search Box */}
           <div className="relative">
-            <Search className="w-3.5 h-3.5 text-[#6B8E9B] absolute left-3 top-1/2 -translate-y-1/2" />
+            <Search className="w-3.5 h-3.5 text-[#7d7d7d] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               id="input-search-entries"
               type="text"
               placeholder="Search thoughts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-8 pr-8 py-1.5 text-xs bg-[#FFFFFF] border border-[#D1D8DB] rounded text-[#2C3539] placeholder-[#D1D8DB] focus:outline-none focus:border-[#6B8E9B] transition-colors"
+              className="w-full pl-8 pr-8 py-2 text-xs bg-[#161616] border border-white/10 rounded-lg text-white placeholder-white/30 focus:outline-none focus:border-[#D4AF37]/60 transition-colors font-sans"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#6B8E9B] hover:text-[#2C3539]"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#7d7d7d] hover:text-white"
               >
                 <X className="w-3 h-3" />
               </button>
@@ -620,7 +597,7 @@ export function Dashboard({
           </div>
 
           {/* Date Filter Tabs */}
-          <div className="flex items-center justify-between text-[11px] uppercase tracking-[0.05em] text-[#6B8E9B] font-sans">
+          <div className="flex items-center justify-between text-[11px] uppercase tracking-wider font-mono text-[#7d7d7d]">
             {DATE_FILTERS.map((filter) => (
               <button
                 key={filter.id}
@@ -628,8 +605,8 @@ export function Dashboard({
                 onClick={() => setSelectedDateFilter(filter.id)}
                 className={`px-2 py-0.5 rounded transition-colors cursor-pointer ${
                   selectedDateFilter === filter.id
-                    ? 'text-[#2C3539] font-medium bg-[#FFFFFF] border border-[#D1D8DB]'
-                    : 'hover:text-[#2C3539]'
+                    ? 'text-white font-medium bg-white/10 border border-white/20'
+                    : 'hover:text-white'
                 }`}
               >
                 {filter.label}
@@ -638,16 +615,16 @@ export function Dashboard({
           </div>
         </div>
 
-        {/* List of History Items: List of dates (e.g. October 12th), 14px text */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-1">
+        {/* List of History Items */}
+        <div className="flex-1 overflow-y-auto overscroll-contain p-3 space-y-1.5" data-lenis-prevent="true">
           {filteredEntries.length === 0 ? (
-            <div className="py-12 px-4 text-center text-[#6B8E9B] space-y-2">
-              <p className="font-serif italic text-sm text-[#2C3539]">No reflections recorded</p>
+            <div className="py-12 px-4 text-center text-[#7d7d7d] space-y-2">
+              <p className="font-heading italic text-sm text-white/70">No reflections recorded</p>
               <p className="text-xs font-sans">Click &ldquo;New Entry&rdquo; above to begin.</p>
               {hasActiveFilters && (
                 <button
                   onClick={resetAllFilters}
-                  className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded bg-[#FFFFFF] border border-[#D1D8DB] text-xs font-sans text-[#6B8E9B] hover:text-[#2C3539]"
+                  className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded bg-white/5 border border-white/10 text-xs font-mono text-white/70 hover:text-white cursor-pointer"
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>Clear Filters</span>
@@ -664,32 +641,30 @@ export function Dashboard({
                   key={entry.id}
                   id={`entry-item-${entry.id}`}
                   onClick={() => loadEntryIntoWorkspace(entry)}
-                  className={`w-full text-left px-3.5 py-3 rounded transition-all cursor-pointer group border ${
+                  className={`w-full text-left px-3.5 py-3 rounded-lg transition-all cursor-pointer group border ${
                     isSelected
-                      ? 'bg-[#FFFFFF] border-[#D1D8DB] shadow-xs'
-                      : 'border-transparent hover:border-[#D1D8DB]/50'
+                      ? 'bg-[#181818] border-white/20 shadow-md border-l-2 border-l-[#D4AF37]'
+                      : 'border-transparent hover:border-white/10 hover:bg-white/5'
                   }`}
                 >
-                  {/* Date as primary anchor: 14px text */}
                   <div className="flex items-baseline justify-between gap-2">
                     <span
-                      className={`text-[14px] font-sans transition-colors duration-200 ${
+                      className={`text-sm font-sans transition-colors duration-200 ${
                         isSelected
-                          ? 'text-[#2C3539] font-medium'
-                          : 'text-[#6B8E9B] group-hover:text-[#2C3539]'
+                          ? 'text-white font-medium'
+                          : 'text-[#999] group-hover:text-white'
                       }`}
                     >
                       {formattedDate}
                     </span>
-                    <span className="text-[10px] uppercase tracking-[0.05em] text-[#8DA399] font-sans">
+                    <span className="text-[10px] uppercase font-mono tracking-wider text-[#10b981]">
                       {entry.category}
                     </span>
                   </div>
 
-                  {/* Title subtitle */}
                   <p
-                    className={`text-xs font-serif truncate mt-0.5 ${
-                      isSelected ? 'text-[#2C3539]' : 'text-[#6B8E9B]/80 group-hover:text-[#2C3539]'
+                    className={`text-xs truncate mt-1 ${
+                      isSelected ? 'text-white' : 'text-[#7d7d7d] group-hover:text-[#999]'
                     }`}
                   >
                     {entry.title || 'Untitled Reflection'}
@@ -701,28 +676,28 @@ export function Dashboard({
         </div>
 
         {/* Sidebar Footer: User / Session status */}
-        <div className="p-4 border-t border-[#D1D8DB] flex items-center justify-between text-xs font-sans text-[#6B8E9B]">
+        <div className="p-4 border-t border-white/10 flex items-center justify-between text-xs font-mono text-[#7d7d7d]">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[#8DA399]"></span>
-            <span className="truncate max-w-[150px]">
-              {user ? user.displayName || 'Authenticated' : 'Local Sanctuary Session'}
+            <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
+            <span className="truncate max-w-[150px] text-white/80">
+              {user ? user.displayName || 'Authenticated' : 'Local Guest Session'}
             </span>
           </div>
           {user && (
-            <span className="text-[10px] uppercase tracking-[0.05em] text-[#8DA399]">Cloud Synced</span>
+            <span className="text-[10px] uppercase tracking-wider text-[#10b981] font-bold">Cloud Synced</span>
           )}
         </div>
       </aside>
 
-      {/* RIGHT COLUMN: Chat Canvas (~75-80% width, max 680px centered) */}
-      <main className="flex-1 h-full flex flex-col bg-[#F9F8F6] relative overflow-hidden">
-        {/* Subtle Workspace Header Bar */}
-        <header className="px-6 py-4 border-b border-[#D1D8DB]/60 bg-[#F9F8F6] flex flex-wrap items-center justify-between gap-4 z-20">
+      {/* RIGHT COLUMN: Chat Canvas (~75-80% width, max 720px centered) */}
+      <main className="flex-1 h-full flex flex-col bg-[#0a0a0a] relative overflow-hidden">
+        {/* Workspace Header Bar */}
+        <header className="px-6 py-3.5 border-b border-white/10 bg-[#0d0d0d]/80 backdrop-blur-md flex flex-wrap items-center justify-between gap-4 z-20">
           <div className="flex items-center gap-3 flex-1 min-w-0">
             <button
               id="btn-toggle-sidebar"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="lg:hidden p-1.5 rounded border border-[#D1D8DB] text-[#6B8E9B] hover:text-[#2C3539] cursor-pointer"
+              className="lg:hidden p-1.5 rounded-lg border border-white/10 text-[#7d7d7d] hover:text-white cursor-pointer"
               title="Toggle Timeline"
             >
               <Menu className="w-4 h-4" />
@@ -738,17 +713,17 @@ export function Dashboard({
                 persistCurrentEntry({ title: e.target.value });
               }}
               placeholder="Title of this reflection..."
-              className="font-serif text-lg sm:text-xl text-[#2C3539] bg-transparent border-none focus:outline-none p-0 truncate max-w-md"
+              className="font-heading font-medium text-lg sm:text-xl text-white bg-transparent border-b border-transparent hover:border-white/15 focus:border-[#D4AF37]/50 focus:outline-none p-0 truncate max-w-md transition-colors"
             />
           </div>
 
           {/* Action Toolbar */}
           <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
-            {/* Prominent New Journal Entry Button */}
+            {/* New Reflection Button */}
             <button
               id="btn-main-new-entry"
               onClick={createNewEntry}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#6B8E9B] hover:opacity-90 text-white text-xs font-sans uppercase tracking-[0.05em] transition-all cursor-pointer shadow-xs"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-mono uppercase tracking-wider transition-all cursor-pointer"
               title="Start a fresh, clean reflection"
             >
               <Plus className="w-3.5 h-3.5" />
@@ -761,10 +736,10 @@ export function Dashboard({
                 id="btn-action-summarize"
                 onClick={() => handleQuickAction('summarize')}
                 disabled={isGenerating || messages.length === 0}
-                className="flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-l bg-[#FFFFFF] border border-r-0 border-[#D1D8DB] text-[#2C3539] text-xs font-sans uppercase tracking-[0.05em] hover:bg-[#F9F8F6] transition-colors disabled:opacity-50 cursor-pointer"
+                className="flex items-center gap-1.5 pl-3 pr-2 py-1.5 rounded-l-lg bg-[#141414] border border-r-0 border-white/10 text-white text-xs font-mono uppercase tracking-wider hover:bg-white/10 transition-colors disabled:opacity-40 cursor-pointer"
                 title={`Generate ${currentSummaryConfig.label}`}
               >
-                <Sparkles className="w-3 h-3 text-[#6B8E9B]" />
+                <Sparkles className="w-3 h-3 text-[#D4AF37]" />
                 <span>{currentSummaryConfig.label}</span>
               </button>
 
@@ -772,13 +747,13 @@ export function Dashboard({
                 id="btn-summary-type-toggle"
                 onClick={() => setSummaryMenuOpen(!summaryMenuOpen)}
                 disabled={isGenerating}
-                className="flex items-center justify-center px-1.5 py-1.5 rounded-r bg-[#FFFFFF] border border-[#D1D8DB] text-[#6B8E9B] hover:text-[#2C3539] text-xs transition-colors disabled:opacity-50 cursor-pointer"
+                className="flex items-center justify-center px-1.5 py-1.5 rounded-r-lg bg-[#141414] border border-white/10 text-[#7d7d7d] hover:text-white text-xs transition-colors disabled:opacity-40 cursor-pointer"
               >
                 <ChevronDown className={`w-3 h-3 transition-transform ${summaryMenuOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {summaryMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-64 bg-[#FFFFFF] rounded border border-[#D1D8DB] shadow-md p-1.5 z-50 space-y-1 font-sans">
+                <div className="absolute right-0 top-full mt-2 w-64 bg-[#141414] rounded-xl border border-white/15 shadow-2xl p-1.5 z-50 space-y-1 font-mono text-xs">
                   {SUMMARY_TYPES.map((typeOption) => {
                     const isSelected = selectedSummaryType === typeOption.id;
                     return (
@@ -793,12 +768,12 @@ export function Dashboard({
                             setSummaryMenuOpen(false);
                           }
                         }}
-                        className={`w-full text-left p-2 rounded transition-colors text-xs flex items-center justify-between cursor-pointer ${
-                          isSelected ? 'bg-[#F9F8F6] text-[#2C3539] font-medium' : 'text-[#6B8E9B] hover:bg-[#F9F8F6]'
+                        className={`w-full text-left p-2.5 rounded-lg transition-colors text-xs flex items-center justify-between cursor-pointer ${
+                          isSelected ? 'bg-white/15 text-white font-medium' : 'text-[#999] hover:bg-white/5 hover:text-white'
                         }`}
                       >
                         <span>{typeOption.label}</span>
-                        {isSelected && <Check className="w-3 h-3 text-[#6B8E9B]" />}
+                        {isSelected && <Check className="w-3 h-3 text-[#10b981]" />}
                       </button>
                     );
                   })}
@@ -811,9 +786,9 @@ export function Dashboard({
               id="btn-action-brainstorm"
               onClick={() => handleQuickAction('brainstorm')}
               disabled={isGenerating || messages.length === 0}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#FFFFFF] border border-[#D1D8DB] hover:border-[#6B8E9B] text-[#2C3539] text-xs font-sans uppercase tracking-[0.05em] transition-colors disabled:opacity-50 cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141414] border border-white/10 hover:border-white/20 text-white text-xs font-mono uppercase tracking-wider transition-colors disabled:opacity-40 cursor-pointer"
             >
-              <Lightbulb className="w-3 h-3 text-[#6B8E9B]" />
+              <Lightbulb className="w-3 h-3 text-[#f59e0b]" />
               <span className="hidden sm:inline">Brainstorm</span>
             </button>
 
@@ -821,21 +796,21 @@ export function Dashboard({
             <button
               id="btn-action-maps-agent"
               onClick={() => (onOpenMaps ? onOpenMaps() : setMapsModalOpen(true))}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[#FFFFFF] border border-[#D1D8DB] hover:border-[#6B8E9B] text-[#6B8E9B] hover:text-[#2C3539] text-xs font-sans uppercase tracking-[0.05em] transition-all cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#141414] border border-white/10 hover:border-white/20 text-[#3b82f6] hover:text-[#60a5fa] text-xs font-mono uppercase tracking-wider transition-all cursor-pointer"
               title="Open Google Maps Real-Time Agent"
             >
-              <Compass className="w-3.5 h-3.5 text-[#6B8E9B]" />
+              <Compass className="w-3.5 h-3.5 text-[#3b82f6]" />
               <span className="hidden md:inline">Maps Agent</span>
             </button>
 
             {/* Sync status */}
-            <div className="flex items-center gap-1 text-xs text-[#8DA399] font-sans pl-1">
-              {saveStatus === 'saving' && <RefreshCw className="w-3 h-3 animate-spin text-[#6B8E9B]" />}
-              {saveStatus === 'saved' && <Check className="w-3 h-3 text-[#8DA399]" />}
+            <div className="flex items-center gap-1 text-xs font-mono text-[#10b981] pl-1">
+              {saveStatus === 'saving' && <RefreshCw className="w-3 h-3 animate-spin text-[#D4AF37]" />}
+              {saveStatus === 'saved' && <Check className="w-3 h-3 text-[#10b981]" />}
               {saveStatus === 'error' && (
                 <button
                   onClick={() => persistCurrentEntry()}
-                  className="text-rose-600 text-[10px] hover:underline cursor-pointer flex items-center gap-1"
+                  className="text-rose-400 text-[10px] hover:underline cursor-pointer flex items-center gap-1"
                 >
                   <AlertCircle className="w-3 h-3" />
                   <span>Retry</span>
@@ -849,7 +824,7 @@ export function Dashboard({
                 id="btn-delete-entry"
                 onClick={() => setDeleteConfirmId(selectedEntryId)}
                 title="Silence / delete reflection"
-                className="p-1.5 rounded text-[#6B8E9B] hover:text-rose-600 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg text-[#7d7d7d] hover:text-rose-400 transition-colors cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -857,29 +832,34 @@ export function Dashboard({
           </div>
         </header>
 
-        {/* CHAT CANVAS CONTAINER: max-w-[680px] centered in the right pane */}
-        <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-10">
-          <div className="w-full max-w-[680px] mx-auto space-y-12">
+        {/* CHAT CANVAS CONTAINER: max-w-[720px] centered in the right pane */}
+        <div className="flex-1 overflow-y-auto overscroll-contain px-4 sm:px-8 py-10" data-lenis-prevent="true">
+          <div className="w-full max-w-[720px] mx-auto space-y-10">
             {messages.length === 0 ? (
-              /* Empty state: "I am here. Take your time." centered in the canvas */
-              <div className="h-[50vh] flex flex-col items-center justify-center text-center space-y-6">
-                <div className="space-y-2">
-                  <h2 className="text-2xl sm:text-3xl font-serif text-[#2C3539] font-normal italic tracking-[-0.01em]">
+              /* Empty state */
+              <div className="min-h-[50vh] flex flex-col items-center justify-center text-center space-y-8">
+                <div className="space-y-3">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-mono text-[#D4AF37] uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>PAI Zero-Loss Memory Core</span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl font-heading font-medium text-[#f4f4f4] tracking-tight">
                     I am here. Take your time.
                   </h2>
-                  <p className="text-sm font-sans text-[#6B8E9B] font-light max-w-sm mx-auto">
-                    Speak freely or untangle a quiet consideration.
+                  <p className="text-sm font-sans text-[#999] max-w-md mx-auto leading-relaxed">
+                    Speak freely or explore an emergent concept. Your thoughts are privately anchored with sovereign persistence.
                   </p>
                 </div>
 
                 {/* Prompt Starters */}
-                <div className="w-full pt-4 space-y-2 text-left">
+                <div className="w-full pt-2 space-y-2.5 text-left">
                   {PROMPT_SUGGESTIONS.map((suggestion, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleSendMessage(suggestion)}
-                      className="w-full text-left p-3.5 rounded bg-[#FFFFFF] border border-[#D1D8DB] hover:border-[#6B8E9B] text-[#2C3539] text-xs font-serif italic transition-colors cursor-pointer block leading-relaxed"
+                      className="w-full text-left p-4 rounded-xl bg-[#111111] border border-white/10 hover:border-[#D4AF37]/50 hover:bg-[#151515] text-[#dcdcdc] text-xs sm:text-sm font-sans transition-all cursor-pointer block leading-relaxed group"
                     >
+                      <span className="text-[#D4AF37] group-hover:translate-x-1 inline-block transition-transform mr-2">→</span>
                       &ldquo;{suggestion}&rdquo;
                     </button>
                   ))}
@@ -887,48 +867,56 @@ export function Dashboard({
               </div>
             ) : (
               /* Messages Stream */
-              <div className="space-y-10">
+              <div className="space-y-8">
                 {messages.map((msg) => (
                   <div key={msg.id} id={`msg-${msg.id}`}>
                     {msg.role === 'user' ? (
-                      /* User Message: Albert Sans, 16px, flush right, no bubble, #6B8E9B text */
+                      /* User Message */
                       <div className="text-right ml-auto max-w-[85%]">
-                        <p className="font-sans text-[16px] text-[#6B8E9B] font-normal leading-relaxed whitespace-pre-wrap">
+                        <div className="inline-block p-4 rounded-2xl rounded-br-xs bg-[#181818] border border-white/10 text-white text-[15px] font-sans leading-relaxed text-left">
                           {msg.content}
-                        </p>
+                        </div>
                       </div>
                     ) : (
-                      /* AI Message: Lora, 18px, flush left, #2C3539 text, 1.8 line-height */
+                      /* AI Message */
                       <div className="text-left mr-auto max-w-full relative group">
-                        <MarkdownRenderer content={msg.content} />
+                        <div className="p-5 rounded-2xl rounded-bl-xs bg-[#111111] border border-white/10 text-white">
+                          <MarkdownRenderer content={msg.content} />
 
-                        {/* Copy Option */}
-                        <button
-                          onClick={() => handleCopyMarkdown(msg.content, msg.id)}
-                          title="Copy reflection"
-                          className="opacity-0 group-hover:opacity-100 mt-2 text-[11px] uppercase tracking-[0.05em] font-sans text-[#6B8E9B] hover:text-[#2C3539] transition-opacity inline-flex items-center gap-1 cursor-pointer"
-                        >
-                          {copiedId === msg.id ? (
-                            <>
-                              <Check className="w-3 h-3 text-[#8DA399]" />
-                              <span>Copied</span>
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="w-3 h-3" />
-                              <span>Copy</span>
-                            </>
-                          )}
-                        </button>
+                          {/* Copy Option */}
+                          <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between">
+                            <span className="text-[10px] font-mono text-[#7d7d7d] uppercase tracking-wider">
+                              Gemini 2.5 Flash
+                            </span>
+                            <button
+                              onClick={() => handleCopyMarkdown(msg.content, msg.id)}
+                              title="Copy reflection"
+                              className="text-[11px] uppercase tracking-wider font-mono text-[#7d7d7d] hover:text-[#D4AF37] transition-colors inline-flex items-center gap-1 cursor-pointer"
+                            >
+                              {copiedId === msg.id ? (
+                                <>
+                                  <Check className="w-3 h-3 text-[#10b981]" />
+                                  <span className="text-[#10b981]">Copied</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="w-3 h-3" />
+                                  <span>Copy</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     )}
                   </div>
                 ))}
 
-                {/* AI Thinking State: subtle breathing opacity change on a small ... text */}
+                {/* AI Thinking State */}
                 {isGenerating && (
-                  <div className="text-left py-2">
-                    <span className="font-serif text-xl text-[#6B8E9B] animate-pulse">...</span>
+                  <div className="text-left py-2 flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-[#D4AF37] animate-ping" />
+                    <span className="font-mono text-xs text-[#7d7d7d]">Synthesizing sovereign reflection...</span>
                   </div>
                 )}
 
@@ -938,10 +926,10 @@ export function Dashboard({
           </div>
         </div>
 
-        {/* INPUT AREA: Bottom fixed, gradient fade to mask scrolling text: linear-gradient(to top, #F9F8F6 80%, transparent) */}
-        <div className="bg-gradient-to-t from-[#F9F8F6] via-[#F9F8F6]/95 to-transparent pt-8 pb-6 px-4 z-20">
-          <div className="w-full max-w-[680px] mx-auto space-y-2">
-            <div className="relative bg-[#FFFFFF] border border-[#D1D8DB] focus-within:border-[#6B8E9B] rounded-lg shadow-2xs transition-colors">
+        {/* INPUT AREA: Bottom fixed, gradient fade to mask scrolling text */}
+        <div className="bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/95 to-transparent pt-6 pb-6 px-4 z-20">
+          <div className="w-full max-w-[720px] mx-auto space-y-2">
+            <div className="relative bg-[#141414] border border-white/15 focus-within:border-[#D4AF37] rounded-xl shadow-2xl transition-colors">
               <textarea
                 id="textarea-reflection-input"
                 ref={textareaRef}
@@ -956,23 +944,23 @@ export function Dashboard({
                 }}
                 disabled={isGenerating}
                 placeholder="Take your time..."
-                className="w-full p-4 pr-14 bg-transparent outline-none resize-none font-sans text-[16px] text-[#2C3539] placeholder-[#D1D8DB] leading-relaxed block"
+                className="w-full p-4 pr-14 bg-transparent outline-none resize-none font-sans text-[15px] text-white placeholder-white/30 leading-relaxed block"
               />
 
               <button
                 id="btn-submit-reflection"
                 onClick={() => handleSendMessage()}
                 disabled={isGenerating || !inputPrompt.trim()}
-                className="absolute right-3 bottom-3 p-2 rounded bg-[#6B8E9B] text-white hover:opacity-90 disabled:opacity-30 disabled:cursor-not-allowed transition-opacity cursor-pointer"
+                className="absolute right-3 bottom-3 p-2 rounded-lg bg-[#D4AF37] text-black hover:bg-[#c49f27] disabled:opacity-20 disabled:cursor-not-allowed transition-all cursor-pointer font-bold shadow-md"
                 title="Send"
               >
                 <Send className="w-3.5 h-3.5" />
               </button>
             </div>
 
-            <div className="flex items-center justify-between text-[11px] font-sans text-[#6B8E9B]/80 px-1 pt-1">
+            <div className="flex items-center justify-between text-[11px] font-mono text-[#7d7d7d] px-1 pt-1">
               <span>Sovereign Storage &bull; Zero Training</span>
-              <span>Enter to send &bull; Shift + Enter for new line</span>
+              <span>Enter to reflect &bull; Shift + Enter for new line</span>
             </div>
           </div>
         </div>
@@ -980,22 +968,22 @@ export function Dashboard({
 
       {/* Delete Confirmation Modal */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 bg-[#2C3539]/30 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-[#FFFFFF] border border-[#D1D8DB] max-w-sm w-full p-6 rounded-lg space-y-4 shadow-sm">
-            <h3 className="text-xl font-serif text-[#2C3539]">Silence Reflection?</h3>
-            <p className="text-xs font-sans text-[#6B8E9B] leading-relaxed">
-              This reflection will be permanently erased from your records.
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-[#141414] border border-white/15 max-w-sm w-full p-6 rounded-2xl space-y-4 shadow-2xl">
+            <h3 className="text-lg font-heading font-semibold text-white">Silence Reflection?</h3>
+            <p className="text-xs font-sans text-[#999] leading-relaxed">
+              This reflection will be permanently erased from your records with zero retention buffers.
             </p>
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 onClick={() => setDeleteConfirmId(null)}
-                className="text-xs font-sans uppercase tracking-[0.05em] text-[#6B8E9B] hover:text-[#2C3539] cursor-pointer"
+                className="text-xs font-mono uppercase tracking-wider text-[#7d7d7d] hover:text-white cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={() => handleDeleteEntry(deleteConfirmId)}
-                className="px-4 py-2 rounded bg-rose-600 hover:opacity-90 text-white text-xs font-sans uppercase tracking-[0.05em] cursor-pointer"
+                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-xs font-mono uppercase tracking-wider cursor-pointer"
               >
                 Erase
               </button>
