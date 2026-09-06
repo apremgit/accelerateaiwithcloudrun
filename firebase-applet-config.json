@@ -1,7 +1,7 @@
 {
   "projectId": "learning-gcp-prem",
   "appId": "1:811322756882:web:f13a18fe6c0e2a3703edcb",
-  "apiKey": "AIzaSyDJNUNp8QWHQsftbQaLzl7qKEyL0F80GuY",
+  "apiKey": "",
   "authDomain": "learning-gcp-prem.firebaseapp.com",
   "firestoreDatabaseId": "ai-studio-27aa3fd8-b3b1-4e19-ae11-6fbad7438529",
   "storageBucket": "learning-gcp-prem.firebasestorage.app",
