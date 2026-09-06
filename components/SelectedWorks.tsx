@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -25,6 +26,11 @@ export function SelectedWorks({ onSelectService }: SelectedWorksProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [activeService, setActiveService] = useState<FlagshipServiceData | null>(null);
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close modal on Escape key
   useEffect(() => {
@@ -121,11 +127,19 @@ export function SelectedWorks({ onSelectService }: SelectedWorksProps) {
         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
       >
         {FLAGSHIP_SERVICES.map((service) => (
-          <motion.div
+          <div
             key={service.id}
+            role="button"
+            tabIndex={0}
             onClick={() => handleCardClick(service)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleCardClick(service);
+              }
+            }}
             data-cursor="EXPAND"
-            className="flex-shrink-0 w-[310px] sm:w-[350px] md:w-[380px] h-[460px] sm:h-[480px] rounded-2xl snap-start cursor-pointer relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border border-white/10"
+            className="flex-shrink-0 w-[310px] sm:w-[350px] md:w-[380px] h-[460px] sm:h-[480px] rounded-2xl snap-start cursor-pointer relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl border border-white/10 select-none"
             style={{ background: service.gradient }}
           >
             {/* Giant Watermark Rank Number */}
@@ -188,192 +202,189 @@ export function SelectedWorks({ onSelectService }: SelectedWorksProps) {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         ))}
       </div>
 
       {/* Smooth Vertical Expansion Motion Modal */}
-      <AnimatePresence>
-        {activeService && (
-          <div 
-            className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6 md:p-10"
-            data-lenis-prevent="true"
-          >
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              onClick={() => setActiveService(null)}
-              className="fixed inset-0 bg-black/85 backdrop-blur-md cursor-pointer z-10"
-            />
-
-            {/* Vertically Expanded Content Panel */}
-            <motion.div
-              initial={{ opacity: 0, y: 50, scale: 0.96 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 40, scale: 0.96 }}
-              transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+      {mounted && createPortal(
+        <AnimatePresence>
+          {activeService && (
+            <div 
+              className="fixed inset-0 z-[120] flex items-center justify-center p-3 sm:p-6 md:p-10"
               data-lenis-prevent="true"
-              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-2xl border border-white/20 text-white shadow-2xl flex flex-col z-20 selection:bg-[#D4AF37]/30 selection:text-white"
-              style={{ 
-                background: activeService.gradient,
-                WebkitOverflowScrolling: 'touch'
-              }}
             >
-              {/* Sticky Modal Top Bar */}
-              <div className="sticky top-0 left-0 right-0 px-6 sm:px-8 py-4 bg-black/60 backdrop-blur-xl border-b border-white/15 flex items-center justify-between z-30">
-                <div className="flex items-center gap-3">
-                  <span className="font-mono text-xl font-bold text-[#D4AF37]">
-                    {activeService.rank}
-                  </span>
-                  <div className="h-4 w-px bg-white/20" />
-                  <span className="font-mono text-xs uppercase tracking-wider text-white/80">
-                    {activeService.category}
-                  </span>
-                  <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-white/10 text-[10px] font-mono border border-white/15">
-                    {activeService.gcpBadge}
-                  </span>
-                </div>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+                onClick={() => setActiveService(null)}
+                className="fixed inset-0 bg-black/85 backdrop-blur-md cursor-pointer z-10"
+              />
 
-                <button
-                  onClick={() => setActiveService(null)}
-                  className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
-                  data-cursor="CLOSE"
-                  title="Close Details (Esc)"
-                >
-                  <X size={16} />
-                  <span>Close</span>
-                </button>
-              </div>
-
-              {/* Modal Body Content */}
-              <div className="p-6 sm:p-10 md:p-12 space-y-10 flex-1">
-                {/* Title & Subtitle Block */}
-                <div className="space-y-3">
-                  <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-heading text-white leading-tight">
-                    {activeService.title}
-                  </h2>
-                  <p className="text-lg sm:text-xl text-[#D4AF37] font-sans font-light">
-                    {activeService.subtitle}
-                  </p>
-                  <p className="text-sm sm:text-base text-gray-300 leading-relaxed font-sans pt-1">
-                    {activeService.hackathonRole}
-                  </p>
-                </div>
-
-                {/* Section 1: Challenge */}
-                <div className="p-6 rounded-xl bg-black/40 border border-white/10 space-y-2">
-                  <h4 className="text-xs uppercase tracking-wider font-mono text-[#D4AF37] flex items-center gap-2">
-                    <ShieldCheck className="w-4 h-4 text-[#D4AF37]" />
-                    <span>The Engineering Challenge</span>
-                  </h4>
-                  <p className="text-sm sm:text-base text-gray-200 leading-relaxed font-sans">
-                    {activeService.challenge}
-                  </p>
-                </div>
-
-                {/* Section 2: Solution Architecture */}
-                <div className="space-y-3">
-                  <h4 className="text-xs uppercase tracking-wider font-mono text-white/70">
-                    Solution Architecture & Implementation
-                  </h4>
-                  <p className="text-sm sm:text-base text-gray-200 leading-relaxed font-sans bg-black/30 p-6 rounded-xl border border-white/10">
-                    {activeService.architecture}
-                  </p>
-                </div>
-
-                {/* Section 3: Key Features & Isolation Capabilities */}
-                <div className="space-y-4">
-                  <h4 className="text-xs uppercase tracking-wider font-mono text-white/70">
-                    Core Architectural Capabilities
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {activeService.keyFeatures.map((feature, i) => (
-                      <div 
-                        key={i}
-                        className="p-4 rounded-xl bg-black/35 border border-white/10 flex items-start gap-3"
-                      >
-                        <CheckCircle2 className="w-4 h-4 text-[#10b981] shrink-0 mt-0.5" />
-                        <span className="text-xs sm:text-sm text-gray-200 leading-relaxed font-sans">
-                          {feature}
-                        </span>
-                      </div>
-                    ))}
+              {/* Vertically Expanded Content Panel */}
+              <motion.div
+                initial={{ opacity: 0, y: 50, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 40, scale: 0.96 }}
+                transition={{ type: 'spring', damping: 28, stiffness: 280 }}
+                data-lenis-prevent="true"
+                className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto overscroll-contain rounded-2xl border border-white/20 text-white shadow-2xl flex flex-col z-20 selection:bg-[#D4AF37]/30 selection:text-white"
+                style={{ 
+                  background: activeService.gradient,
+                  WebkitOverflowScrolling: 'touch'
+                }}
+              >
+                {/* Sticky Modal Top Bar */}
+                <div className="sticky top-0 left-0 right-0 px-6 sm:px-8 py-4 bg-black/60 backdrop-blur-xl border-b border-white/15 flex items-center justify-between z-30">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-xl font-bold text-[#D4AF37]">
+                      {activeService.rank}
+                    </span>
+                    <div className="h-4 w-px bg-white/20" />
+                    <span className="font-mono text-xs uppercase tracking-wider text-white/80">
+                      {activeService.category}
+                    </span>
+                    <span className="hidden sm:inline-block px-2.5 py-0.5 rounded-full bg-white/10 text-[10px] font-mono border border-white/15">
+                      {activeService.gcpBadge}
+                    </span>
                   </div>
+
+                  <button
+                    onClick={() => setActiveService(null)}
+                    className="px-3 py-1.5 rounded-full bg-white/10 hover:bg-white/25 border border-white/20 text-white text-xs font-mono uppercase tracking-wider flex items-center gap-1.5 transition-colors cursor-pointer"
+                    data-cursor="CLOSE"
+                    title="Close Details (Esc)"
+                  >
+                    <X size={16} />
+                    <span>Close</span>
+                  </button>
                 </div>
 
-                {/* Section 4: Live Benchmarks */}
-                <div className="space-y-4">
-                  <h4 className="text-xs uppercase tracking-wider font-mono text-white/70">
-                    Production Benchmarks &amp; Verified Metrics
-                  </h4>
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {activeService.benchmarks.map((metric, i) => (
-                      <div 
-                        key={i}
-                        className="p-4 rounded-xl bg-black/40 border border-white/10 text-center space-y-1"
-                      >
-                        <span className="text-[10px] uppercase font-mono text-gray-400 block">Metric {i + 1}</span>
-                        <p className="text-xs sm:text-sm font-semibold text-white font-mono">{metric}</p>
-                      </div>
-                    ))}
+                {/* Modal Body Content */}
+                <div className="p-6 sm:p-10 md:p-12 space-y-10 flex-1">
+                  {/* Title & Subtitle Block */}
+                  <div className="space-y-3">
+                    <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-heading text-white leading-tight">
+                      {activeService.title}
+                    </h2>
+                    <p className="text-gray-300 text-base sm:text-lg max-w-3xl leading-relaxed">
+                      {activeService.subtitle}
+                    </p>
                   </div>
-                </div>
 
-                {/* Section 5: Production Code Snippet */}
-                {activeService.codeSnippet && (
+                  {/* Challenge & Problem Statement */}
+                  <div className="space-y-3 rounded-xl bg-black/40 p-6 border border-white/10 backdrop-blur-sm">
+                    <div className="flex items-center gap-2 text-xs uppercase font-mono tracking-wider text-[#D4AF37]">
+                      <Sparkles className="w-4 h-4" />
+                      <span>The Architecture Challenge</span>
+                    </div>
+                    <p className="text-gray-200 text-sm sm:text-base leading-relaxed">
+                      {activeService.challenge}
+                    </p>
+                  </div>
+
+                  {/* Solution Architecture Breakdown */}
+                  <div className="space-y-3 rounded-xl bg-black/40 p-6 border border-white/10 backdrop-blur-sm">
+                    <div className="flex items-center gap-2 text-xs uppercase font-mono tracking-wider text-[#10b981]">
+                      <ShieldCheck className="w-4 h-4" />
+                      <span>Engineering Solution Architecture</span>
+                    </div>
+                    <p className="text-gray-200 text-sm sm:text-base leading-relaxed">
+                      {activeService.architecture}
+                    </p>
+                  </div>
+
+                  {/* Key Capabilities Grid */}
+                  <div className="space-y-4">
+                    <h4 className="text-xs uppercase font-mono tracking-wider text-gray-400">
+                      Core Capabilities & Enforcements
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {activeService.keyFeatures.map((feat, i) => (
+                        <div 
+                          key={i} 
+                          className="flex items-start gap-3 p-3.5 rounded-lg bg-white/[0.04] border border-white/10"
+                        >
+                          <CheckCircle2 className="w-4 h-4 text-[#10b981] mt-0.5 shrink-0" />
+                          <span className="text-xs sm:text-sm text-gray-200 leading-snug">
+                            {feat}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Benchmarks & Metrics Row */}
+                  <div className="space-y-4">
+                    <h4 className="text-xs uppercase font-mono tracking-wider text-gray-400">
+                      Verified Benchmarks & Security Proofs
+                    </h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      {activeService.benchmarks.map((b, i) => (
+                        <div 
+                          key={i} 
+                          className="p-3 rounded-lg bg-black/50 border border-white/10 text-center flex flex-col justify-center"
+                        >
+                          <span className="text-xs sm:text-sm font-mono font-bold text-[#10b981]">
+                            {b}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Code Implementation Preview */}
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-xs uppercase tracking-wider font-mono text-white/70">
-                        {activeService.codeSnippetTitle || 'Architecture Implementation Snippet'}
-                      </h4>
+                      <span className="text-xs uppercase font-mono tracking-wider text-gray-400">
+                        {activeService.codeSnippetTitle}
+                      </span>
                       <button
                         onClick={() => handleCopyCode(activeService.codeSnippet)}
-                        className="inline-flex items-center gap-1.5 text-xs font-mono text-gray-300 hover:text-white px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 transition-colors cursor-pointer"
-                        title="Copy code to clipboard"
+                        className="px-2.5 py-1 rounded bg-white/10 hover:bg-white/20 border border-white/15 text-[11px] font-mono flex items-center gap-1.5 transition-colors cursor-pointer"
+                        title="Copy Snippet"
                       >
                         {copied ? (
                           <>
-                            <Check className="w-3.5 h-3.5 text-[#10b981]" />
-                            <span className="text-[#10b981]">Copied</span>
+                            <Check size={12} className="text-[#10b981]" />
+                            <span className="text-[#10b981]">Copied!</span>
                           </>
                         ) : (
                           <>
-                            <Copy className="w-3.5 h-3.5" />
+                            <Copy size={12} />
                             <span>Copy Snippet</span>
                           </>
                         )}
                       </button>
                     </div>
-
-                    <div className="p-4 rounded-xl bg-[#0a0a0a] border border-white/15 overflow-x-auto">
-                      <pre className="font-mono text-xs sm:text-sm text-[#00ff9d] leading-relaxed whitespace-pre">
-                        {activeService.codeSnippet}
-                      </pre>
-                    </div>
+                    <pre className="p-4 sm:p-5 rounded-xl bg-black/75 border border-white/15 text-xs sm:text-sm font-mono text-gray-200 overflow-x-auto leading-relaxed max-h-[300px]">
+                      <code>{activeService.codeSnippet}</code>
+                    </pre>
                   </div>
-                )}
-              </div>
+                </div>
 
-              {/* Modal Footer Bar */}
-              <div className="sticky bottom-0 left-0 right-0 px-6 sm:px-8 py-4 bg-black/70 backdrop-blur-xl border-t border-white/15 flex items-center justify-between z-30">
-                <span className="text-xs font-mono text-gray-400">
-                  {activeService.rank} of 04 &bull; Flagship Service Pillar
-                </span>
-                <button
-                  onClick={() => setActiveService(null)}
-                  className="px-5 py-2 rounded-full bg-[#D4AF37] hover:bg-[#c49f27] text-black text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer"
-                  data-cursor="CLOSE"
-                >
-                  Done Reading &bull; Return to Slider
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+                {/* Sticky Modal Bottom Bar */}
+                <div className="sticky bottom-0 left-0 right-0 px-6 sm:px-8 py-4 bg-black/70 backdrop-blur-xl border-t border-white/15 flex items-center justify-between z-30">
+                  <span className="text-xs font-mono text-gray-400">
+                    Press <kbd className="px-1.5 py-0.5 rounded bg-white/10 border border-white/20 text-[10px]">Esc</kbd> to close
+                  </span>
+                  <button
+                    onClick={() => setActiveService(null)}
+                    className="px-5 py-2 rounded-full bg-[#D4AF37] hover:bg-[#c49f27] text-black text-xs font-mono font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    data-cursor="CLOSE"
+                  >
+                    Done Reading &bull; Return to Slider
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       <style dangerouslySetInnerHTML={{__html: `
         .no-scrollbar::-webkit-scrollbar {

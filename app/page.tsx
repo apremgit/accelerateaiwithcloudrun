@@ -98,6 +98,29 @@ export default function Home() {
     mapsModalOpen,
   ]);
 
+  // Global Escape key listener to close whichever modal/overlay is open
+  useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (activeBlueprint) setActiveBlueprint(null);
+        else if (mapsModalOpen) setMapsModalOpen(false);
+        else if (memoryHubOpen) setMemoryHubOpen(false);
+        else if (stackOpen) setStackOpen(false);
+        else if (privacyOpen) setPrivacyOpen(false);
+        else if (preferencesOpen) setPreferencesOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleGlobalKeyDown);
+    return () => window.removeEventListener('keydown', handleGlobalKeyDown);
+  }, [
+    activeBlueprint,
+    mapsModalOpen,
+    memoryHubOpen,
+    stackOpen,
+    privacyOpen,
+    preferencesOpen,
+  ]);
+
   // Handler to jump to Archives section
   const handleScrollToArchives = useCallback(() => {
     const el = document.getElementById('archives');

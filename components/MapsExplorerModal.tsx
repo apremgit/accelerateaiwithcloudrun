@@ -102,6 +102,18 @@ export function MapsExplorerModal({
     }
   }, [messages, isAgentThinking, activeTab]);
 
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   // Handle sending agent message
@@ -271,6 +283,8 @@ export function MapsExplorerModal({
           <div className="flex items-center gap-2">
             <button
               onClick={onClose}
+              data-cursor="CLOSE"
+              aria-label="Close Maps Explorer"
               className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-[#7d7d7d] hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
