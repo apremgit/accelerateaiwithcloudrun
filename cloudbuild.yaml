@@ -1,0 +1,36 @@
+# Google Cloud Build Pipeline for PAI on Cloud Run
+# Mandatory challenge tag: dev-tutorial=cloud-run-ai-challenge
+steps:
+  # 1. Typecheck and verify production build
+  - name: 'node:20-alpine'
+    entrypoint: 'npm'
+    args: ['ci']
+
+  # 2. Build optimized multi-stage OCI container
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/pai-companion:$COMMIT_SHA'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/pai-companion:latest'
+      - '.'
+
+  # 3. Deploy new revision to Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'pai-companion'
+      - '--image=gcr.io/$PROJECT_ID/pai-companion:$COMMIT_SHA'
+      - '--region=us-central1'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--min-instances=0'
+      - '--update-labels=dev-tutorial=cloud-run-ai-challenge'
+      - '--set-secrets=GEMINI_API_KEY=pai-gemini-key:latest,GOOGLE_MAPS_API_KEY=pai-maps-key:latest'
+
+images:
+  - 'gcr.io/$PROJECT_ID/pai-companion:$COMMIT_SHA'
+  - 'gcr.io/$PROJECT_ID/pai-companion:latest'
