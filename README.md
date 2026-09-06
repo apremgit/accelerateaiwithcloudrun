@@ -1,4 +1,4 @@
-# PAI (Personal AI Companion) — Zero-Loss Persistent Cognitive OS
+# PAI (Personal AI Companion) — Zero-Loss Persistent Cognitive Memory
 
 > **Architect & Developer:** [Avula Prem Kumar](https://github.com/apremgit)  
 > **Repository:** [`apremgit/accelerateaiwithcloudrun`](https://github.com/apremgit/accelerateaiwithcloudrun)  
