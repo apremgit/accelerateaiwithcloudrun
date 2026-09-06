@@ -177,6 +177,6 @@ gcloud run services update $SERVICE_NAME \
 
 **Avula Prem Kumar**  
 - **Role:** Cloud & AI Systems Architect  
-- **Email:** `avulapremkumar9@gmail.com`  
+- **Email:** `avulapremkumarnaidu@gmail.com`  
 - **GitHub:** [@apremgit](https://github.com/apremgit)  
 - **Focus:** Google Cloud Run, Gemini Multimodal Reasoning, Serverless Scale-to-Zero, Sovereign Data Security.
