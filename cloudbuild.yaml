@@ -29,7 +29,7 @@ steps:
       - '--allow-unauthenticated'
       - '--min-instances=0'
       - '--update-labels=dev-tutorial=cloud-run-ai-challenge'
-      - '--set-secrets=GEMINI_API_KEY=pai-gemini-key:latest,GOOGLE_MAPS_API_KEY=pai-maps-key:latest'
+      - '--set-secrets=GEMINI_API_KEY=GEMINI_API_KEY:latest,GOOGLE_MAPS_API_KEY=GOOGLE_MAPS_API_KEY:latest,FIREBASE_API_KEY=FIREBASE_API_KEY:latest'
 
 images:
   - 'gcr.io/$PROJECT_ID/pai-companion:$COMMIT_SHA'

@@ -16,14 +16,45 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || firebaseConfigJson.appId || '1:811322756882:web:f13a18fe6c0e2a3703edcb',
 };
 
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+let currentApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+
+export async function ensureClientFirebaseConfig(): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+  try {
+    const res = await fetch('/api/config/auth');
+    if (!res.ok) return false;
+    const config = await res.json();
+    if (config.apiKey && config.apiKey.length > 10 && config.apiKey !== validApiKey) {
+      // Re-initialize or update with Secret Manager runtime key
+      const dynamicConfig = {
+        ...firebaseConfig,
+        apiKey: config.apiKey,
+      };
+      // Delete existing placeholder app or create named primary app
+      currentApp = initializeApp(dynamicConfig, 'pai-runtime-client');
+      authInstance = getAuth(currentApp);
+      dbInstance = config.firestoreDatabaseId && config.firestoreDatabaseId !== '(default)'
+        ? getFirestore(currentApp, config.firestoreDatabaseId)
+        : getFirestore(currentApp);
+      return true;
+    }
+  } catch (e) {
+    console.warn('[Firebase] Dynamic config fetch deferred:', e);
+  }
+  return false;
+}
+
+// Automatically trigger on client load
+if (typeof window !== 'undefined') {
+  ensureClientFirebaseConfig().catch(() => {});
+}
 
 // Use the designated Firestore Database ID if present, safe against build prerendering
 let dbInstance: any;
 try {
   dbInstance = firebaseConfigJson.firestoreDatabaseId && firebaseConfigJson.firestoreDatabaseId !== '(default)'
-    ? getFirestore(app, firebaseConfigJson.firestoreDatabaseId)
-    : getFirestore(app);
+    ? getFirestore(currentApp, firebaseConfigJson.firestoreDatabaseId)
+    : getFirestore(currentApp);
 } catch (e) {
   console.warn('[Firebase] Firestore init deferred:', e);
 }
@@ -31,7 +62,7 @@ export const db = dbInstance;
 
 let authInstance: any;
 try {
-  authInstance = getAuth(app);
+  authInstance = getAuth(currentApp);
 } catch (e) {
   console.warn('[Firebase] Auth init deferred:', e);
 }
@@ -43,11 +74,14 @@ googleProvider.setCustomParameters({
 });
 
 export const signInWithGoogle = async () => {
-  if (!auth) {
-    return { user: null, error: 'Firebase Auth is not initialized. Please check NEXT_PUBLIC_FIREBASE_API_KEY.' };
+  // Ensure runtime config from Secret Manager is loaded first
+  await ensureClientFirebaseConfig();
+  const activeAuth = authInstance || auth;
+  if (!activeAuth) {
+    return { user: null, error: 'Firebase Auth is not initialized. Please check FIREBASE_API_KEY in Secret Manager.' };
   }
   try {
-    const result = await signInWithPopup(auth, googleProvider);
+    const result = await signInWithPopup(activeAuth, googleProvider);
     return { user: result.user, error: null };
   } catch (error: any) {
     console.error('Firebase Auth Sign-In Error:', error);
