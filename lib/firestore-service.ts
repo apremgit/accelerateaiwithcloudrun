@@ -65,6 +65,9 @@ export async function saveJournalEntry(userId: string, entry: JournalEntry): Pro
   if (!userId) {
     return { success: false, error: 'User ID is required for Firestore operations' };
   }
+  if (!db) {
+    return { success: false, error: 'Firestore is not initialized' };
+  }
 
   try {
     const entryRef = doc(db, 'users', userId, 'entries', entry.id);
@@ -87,7 +90,7 @@ export async function saveJournalEntry(userId: string, entry: JournalEntry): Pro
  * Fetch all entries for a specific user
  */
 export async function getJournalEntries(userId: string): Promise<JournalEntry[]> {
-  if (!userId) return [];
+  if (!userId || !db) return [];
 
   try {
     const entriesRef = collection(db, 'users', userId, 'entries');
@@ -128,7 +131,7 @@ export function subscribeToJournalEntries(
   onUpdate: (entries: JournalEntry[]) => void,
   onError?: (err: Error) => void
 ) {
-  if (!userId) return () => {};
+  if (!userId || !db) return () => {};
 
   const entriesRef = collection(db, 'users', userId, 'entries');
   const q = query(entriesRef, orderBy('updatedAt', 'desc'));
@@ -169,6 +172,9 @@ export function subscribeToJournalEntries(
 export async function deleteJournalEntry(userId: string, entryId: string): Promise<{ success: boolean; error?: string }> {
   if (!userId || !entryId) {
     return { success: false, error: 'User ID and Entry ID are required' };
+  }
+  if (!db) {
+    return { success: false, error: 'Firestore is not initialized' };
   }
 
   try {
